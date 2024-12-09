@@ -21,7 +21,7 @@ class ThemeManager:
         """Initialize the theme manager."""
         self.app = app
         self.config = config
-        self.current_theme = "light"
+        self.current_theme = "light"  # Default theme
         
         logger.info("Theme manager initialized")
         logger.debug(f"Config directory: {config.config_dir}")
@@ -68,6 +68,7 @@ class ThemeManager:
         }
         
         self._load_themes()
+        self._load_saved_theme()
     
     def _load_themes(self):
         """Load themes from the themes directory."""
@@ -198,6 +199,86 @@ class ThemeManager:
             logger.error(traceback.format_exc())
             return False
     
+    def switch_theme(self, theme_name):
+        """Switch to a different theme."""
+        if theme_name in self.themes:
+            success = self.apply_theme(theme_name)
+            if success:
+                # Store the theme preference in the config file
+                theme_file = os.path.join(self.config.config_dir, "theme.txt")
+                try:
+                    with open(theme_file, 'w') as f:
+                        f.write(theme_name)
+                    logger.info(f"Saved theme preference: {theme_name}")
+                except Exception as e:
+                    logger.error(f"Error saving theme preference: {e}")
+            return success
+        return False
+
+    def load_theme_from_file(self, file_path):
+        """Load a theme from a JSON file."""
+        try:
+            with open(file_path, 'r') as f:
+                theme_data = json.load(f)
+                
+            if isinstance(theme_data, dict):
+                if "name" in theme_data and "colors" in theme_data:
+                    theme_name = theme_data["name"]
+                    theme_colors = theme_data["colors"]
+                    self.themes[theme_name] = theme_colors
+                    self._save_themes()
+                    logger.info(f"Successfully loaded theme {theme_name} from {file_path}")
+                    return True
+            logger.error("Invalid theme file format")
+            return False
+        except Exception as e:
+            logger.error(f"Error loading theme from file: {e}")
+            return False
+
+    def _load_saved_theme(self):
+        """Load the previously saved theme."""
+        theme_file = os.path.join(self.config.config_dir, "theme.txt")
+        try:
+            if os.path.exists(theme_file):
+                with open(theme_file, 'r') as f:
+                    saved_theme = f.read().strip()
+                if saved_theme in self.themes:
+                    self.apply_theme(saved_theme)
+                    logger.info(f"Loaded saved theme: {saved_theme}")
+        except Exception as e:
+            logger.error(f"Error loading saved theme: {e}")
+
+    def _is_valid_color(self, color_str):
+        """Validate if a string is a valid color."""
+        try:
+            color = QColor(color_str)
+            return color.isValid() and (
+                color_str.startswith('#') and 
+                len(color_str) in [4, 7, 9]  # #RGB, #RRGGBB, or #RRGGBBAA
+            )
+        except:
+            return False
+
+    def export_theme(self, theme_name, file_path):
+        """Export a theme to a JSON file."""
+        if theme_name not in self.themes:
+            logger.error(f"Theme {theme_name} not found")
+            return False
+            
+        theme_data = {
+            "name": theme_name,
+            "colors": self.themes[theme_name]
+        }
+        
+        try:
+            with open(file_path, 'w') as f:
+                json.dump(theme_data, f, indent=4)
+            logger.info(f"Successfully exported theme {theme_name} to {file_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error exporting theme: {e}")
+            return False
+
     def create_theme(self, name, colors):
         """Create a new theme."""
         if name in self.themes:

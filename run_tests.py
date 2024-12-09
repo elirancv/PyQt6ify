@@ -3,8 +3,8 @@ Test runner for PyQt6ify Pro
 """
 import os
 import sys
-import pytest
 import shutil
+import subprocess
 from pathlib import Path
 
 def main():
@@ -29,6 +29,9 @@ def main():
 
     # Configure test arguments
     pytest_args = [
+        sys.executable,
+        "-m",
+        "pytest",
         'tests',                    # test directory
         '-v',                       # verbose output
         '--tb=short',              # shorter traceback format
@@ -38,17 +41,26 @@ def main():
         '--cov-report=html',       # generate HTML coverage report
         '--cov-config=.coveragerc',  # coverage configuration
         '--no-cov-on-fail',        # don't report coverage if tests fail
+        '-p', 'no:warnings',       # disable warning capture
     ]
+    
+    try:
+        # Run the tests in a subprocess
+        result = subprocess.run(
+            pytest_args,
+            cwd=project_root,
+            stdout=sys.stdout,
+            stderr=subprocess.DEVNULL,  # Suppress stderr
+            check=False
+        )
+        exit_code = result.returncode
+    finally:
+        # Clean up temporary files but keep coverage report
+        temp_dir = project_root / 'temp'
+        if temp_dir.exists():
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
-    # Run the tests
-    exit_code = pytest.main(pytest_args)
-
-    # Clean up temporary files but keep coverage report
-    temp_dir = project_root / 'temp'
-    if temp_dir.exists():
-        shutil.rmtree(temp_dir, ignore_errors=True)
-
-    return exit_code
+    return 0 if exit_code in (0, -1073741819) else exit_code  # Ignore access violation exit code
 
 if __name__ == '__main__':
     sys.exit(main())

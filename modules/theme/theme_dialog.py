@@ -5,7 +5,7 @@ Theme Dialog for PyQt6ify Pro - A modern and polished theme manager.
 import logging
 from PyQt6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QComboBox,
                            QPushButton, QLabel, QFrame, QWidget, QScrollArea,
-                           QGridLayout, QLineEdit, QApplication)
+                           QGridLayout, QLineEdit, QApplication, QInputDialog)
 from PyQt6.QtCore import Qt, QSize, QMargins, QTimer
 from PyQt6.QtGui import QPalette, QColor, QIcon, QPainter, QPen, QPainterPath
 import qtawesome as qta
@@ -46,6 +46,7 @@ class PreviewWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
+        self.setMinimumHeight(500)  # Set a reasonable minimum height
     
     def setup_ui(self):
         """Set up the preview widget UI."""
@@ -174,7 +175,7 @@ class ThemeDialog(QDialog):
         
     def setup_ui(self):
         """Set up the dialog's user interface."""
-        self.setWindowTitle("Theme Settings")
+        self.setWindowTitle("Theme Manager")  # Changed from "Theme Settings"
         self.setMinimumWidth(700)
         self.setMinimumHeight(800)
         
@@ -331,9 +332,9 @@ class ThemeDialog(QDialog):
         try:
             logging.info(f"Theme dialog: changing theme to {theme_name}")
             
-            # Defer the theme change using a single-shot timer
-            # This prevents the dialog from closing due to event loop issues
-            QTimer.singleShot(100, lambda: self._apply_theme(theme_name))
+            # Update the theme immediately
+            if self._apply_theme(theme_name):
+                self.theme_manager.current_theme = theme_name
             
         except Exception as e:
             logging.error(f"Error in theme dialog theme change: {str(e)}")
@@ -350,7 +351,8 @@ class ThemeDialog(QDialog):
                 logging.info(f"Theme dialog: successfully applied theme {theme_name}")
                 if self.parent and hasattr(self.parent, 'statusBar'):
                     self.parent.statusBar().showMessage(f"Theme '{theme_name}' applied successfully", 3000)
-                # Force the preview to refresh
+                # Force the preview to refresh with the new palette
+                self.preview.setPalette(self.palette())
                 self.preview.update()
             else:
                 logging.error(f"Theme dialog: failed to apply theme {theme_name}")
@@ -367,9 +369,30 @@ class ThemeDialog(QDialog):
     
     def on_create_theme(self):
         """Handle creating a new theme."""
-        # TODO: Implement theme creation dialog
-        logging.info("Theme creation dialog not implemented yet")
-    
+        try:
+            from PyQt6.QtWidgets import QInputDialog
+            name, ok = QInputDialog.getText(self, "Create Theme", "Enter theme name:")
+            if ok and name:
+                # Create a new theme based on the current theme
+                current_theme = self.theme_combo.currentText()
+                new_theme = self.theme_manager.themes[current_theme].copy()
+                
+                # Add the new theme
+                self.theme_manager.themes[name] = new_theme
+                self.theme_combo.addItem(name)
+                self.theme_combo.setCurrentText(name)
+                
+                # Save the themes
+                self._apply_theme(name)
+                self.theme_manager._save_themes()
+                
+                if self.parent and hasattr(self.parent, 'statusBar'):
+                    self.parent.statusBar().showMessage(f"Created new theme: {name}", 3000)
+        except Exception as e:
+            logging.error(f"Error creating theme: {str(e)}")
+            if self.parent and hasattr(self.parent, 'statusBar'):
+                self.parent.statusBar().showMessage(f"Error creating theme: {str(e)}", 3000)
+
     def on_delete_theme(self):
         """Handle deleting the current theme."""
         current_theme = self.theme_combo.currentText()
