@@ -1,3 +1,7 @@
+"""
+Configuration management for PyQt6ify Pro.
+"""
+
 import configparser
 import os
 import logging
@@ -18,6 +22,8 @@ class Config:
         Raises:
             ConfigError: If configuration file cannot be loaded or created.
         """
+        # Store config directory
+        self.config_dir = os.path.dirname(os.path.abspath(config_file))
         self.config_file = config_file
         self.config = configparser.ConfigParser()
         
