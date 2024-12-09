@@ -212,8 +212,9 @@ class ThemeManager:
             # Apply palette
             self.app.setPalette(palette)
             
-            # Update window dark mode immediately for current windows
-            is_dark = theme_name.lower() == 'dark'
+            # Update window dark mode based on window color brightness
+            window_color = QColor(theme["window"])
+            is_dark = window_color.lightness() < 128
             for window in self.app.topLevelWindows():
                 self.set_window_dark_mode(window, is_dark)
             
@@ -252,6 +253,11 @@ class ThemeManager:
             
             self.app.setStyleSheet(stylesheet)
             self.current_theme = theme_name
+            
+            # Save to config immediately
+            self.config.set('Window', 'theme', theme_name)
+            self.config.save_config()
+            
             return True
                 
         except Exception as e:

@@ -167,7 +167,7 @@ class MainWindow(QMainWindow):
     def show_theme_dialog(self):
         """Show the theme selection dialog."""
         try:
-            dialog = ThemeDialog(self, theme_manager=self.theme_manager)
+            dialog = ThemeDialog(theme_manager=self.theme_manager, parent=self)
             dialog.exec()
         except Exception as e:
             logger.error(f"Error showing theme dialog: {str(e)}")

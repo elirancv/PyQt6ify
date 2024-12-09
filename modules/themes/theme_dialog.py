@@ -121,9 +121,13 @@ class ThemeDialog(QDialog):
         try:
             # Get current theme colors
             current_theme = self.theme_manager.get_current_theme()
-            background = current_theme.get('background', '#FFFFFF')
-            foreground = current_theme.get('foreground', '#000000')
-            accent = current_theme.get('accent', '#0078D4')
+            background = current_theme.get('window', '#FFFFFF')
+            foreground = current_theme.get('windowText', '#000000')
+            accent = current_theme.get('highlight', '#0078D4')
+            button_bg = current_theme.get('button', '#F0F0F0')
+            button_text = current_theme.get('buttonText', '#000000')
+            base = current_theme.get('base', '#FFFFFF')
+            text = current_theme.get('text', '#000000')
             
             # Apply theme colors
             self.setStyleSheet(f"""
@@ -135,8 +139,8 @@ class ThemeDialog(QDialog):
                     color: {foreground};
                 }}
                 QListWidget {{
-                    background-color: {background};
-                    color: {foreground};
+                    background-color: {base};
+                    color: {text};
                     border: 1px solid {accent};
                     border-radius: 4px;
                 }}
@@ -145,8 +149,8 @@ class ThemeDialog(QDialog):
                     color: {background};
                 }}
                 QPushButton {{
-                    background-color: {background};
-                    color: {foreground};
+                    background-color: {button_bg};
+                    color: {button_text};
                     border: 1px solid {accent};
                     border-radius: 4px;
                     padding: 5px 15px;
@@ -155,10 +159,27 @@ class ThemeDialog(QDialog):
                     background-color: {accent};
                     color: {background};
                 }}
+                QPushButton:disabled {{
+                    background-color: {button_bg};
+                    color: {button_text};
+                    opacity: 0.7;
+                }}
                 QFrame {{
                     border: 1px solid {accent};
                     border-radius: 4px;
                     background-color: {background};
+                }}
+                QLineEdit {{
+                    background-color: {base};
+                    color: {text};
+                    border: 1px solid {accent};
+                    border-radius: 4px;
+                    padding: 5px;
+                }}
+                QLineEdit:disabled {{
+                    background-color: {base};
+                    color: {text};
+                    opacity: 0.7;
                 }}
             """)
             
