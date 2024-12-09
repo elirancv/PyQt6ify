@@ -1,0 +1,21 @@
+{
+    "custom": {
+        "window": "#123456",
+        "windowText": "#ffffff",
+        "base": "#123456",
+        "alternateBase": "#1a4b80",
+        "text": "#ffffff",
+        "button": "#1a4b80",
+        "buttonText": "#ffffff",
+        "brightText": "#ffffff",
+        "light": "#1a4b80",
+        "midlight": "#164066",
+        "dark": "#0a1f33",
+        "mid": "#123456",
+        "shadow": "#061019",
+        "highlight": "#3498db",
+        "highlightedText": "#ffffff",
+        "link": "#3498db",
+        "linkVisited": "#9b59b6"
+    }
+}

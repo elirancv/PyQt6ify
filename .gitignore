@@ -1,34 +1,35 @@
-# Python cache files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 
-# Distribution / packaging
-backups/
-logs/
-docs/build/
-
-# Database files
-database/*.db
-
-# Archives
-*.rar
-*.zip
-
-# IDE specific files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Environment
-.env
-.venv
-env/
-venv/
-ENV/
-
-# Test coverage
+# Coverage
 .coverage
 htmlcov/
-.pytest_cache/
+
+# Test artifacts
+tests/logs/
+tests/temp/
+tests/database/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+venv/
+env/
+.env
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
