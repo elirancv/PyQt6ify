@@ -19,7 +19,7 @@ class ModuleLoader:
         """Check if a file is a valid Python module file."""
         return (
             file_path.endswith('.py') and 
-            not file_path.endswith('__init__.py') and
+            not os.path.basename(file_path).startswith('__') and
             os.path.isfile(file_path)
         )
         
@@ -27,8 +27,9 @@ class ModuleLoader:
         """Get the module name from a file path."""
         rel_path = os.path.relpath(file_path, self.base_path)
         module_path = os.path.splitext(rel_path)[0]
+        # Convert path separators to dots and ensure proper module path
         return module_path.replace(os.sep, '.')
-        
+
     def load_module(self, file_path):
         """
         Load a Python module from a file path.
@@ -41,11 +42,16 @@ class ModuleLoader:
         """
         try:
             module_name = self._get_module_name(file_path)
-            logger.debug(f"Loading module: {module_name} from {file_path}")
             
             # Skip if module is already loaded
+            if module_name in sys.modules:
+                return sys.modules[module_name]
+            
+            # Skip if module is in loaded_modules
             if module_name in self.loaded_modules:
                 return self.loaded_modules[module_name]
+            
+            logger.debug(f"Loading module: {module_name} from {file_path}")
             
             # Load the module
             spec = importlib.util.spec_from_file_location(module_name, file_path)
@@ -87,11 +93,10 @@ class ModuleLoader:
             
             # Load each module
             for file_path in module_files:
-                module_name = self._get_module_name(file_path)
                 module = self.load_module(file_path)
                 if module is not None:
+                    module_name = self._get_module_name(file_path)
                     self.loaded_modules[module_name] = module
-                    logger.debug(f"Added module to loaded_modules: {module_name}")
             
             return self.loaded_modules
             
