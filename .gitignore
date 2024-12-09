@@ -1,0 +1,9 @@
+__pycache__/
+backups/
+logs/
+docs/
+tests/
+*.pyc
+*.rar
+*.zip
+database/*.db
