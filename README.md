@@ -182,15 +182,30 @@ from modules import my_feature
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 Version History
+## 📋 Version History
 
-- v1.0.0 b002 (2024-12-09)
-  - Improved error handling and logging system
-  - Enhanced configuration management with two-tier system
-  - Robust database support with SQLite integration
-  - Cleaner project structure with modular architecture
-  - Modern UI components with PyQt6
-  - Comprehensive documentation and examples
+### v1.0.0 b002 (2024-12-09)
+- 🎨 Enhanced Theme System
+  - Added status bar feedback for theme changes
+  - Improved theme switching stability
+  - Added detailed logging to theme operations
+  - Centralized logging to app.log
+- 🛠️ Menu System Improvements
+  - Added icons to all menu items
+  - Reorganized menu order (File, Edit, View, Help)
+  - Added status tips for menu actions
+- 📁 Project Structure
+  - Consolidated icon resources under resources/icons
+  - Improved theme module organization
+  - Updated documentation
+
+### v1.0.0 b001 (2024-09-04)
+- 🚀 Initial beta release
+- 🎨 Basic theme support (Light/Dark)
+- 📝 Configuration management
+- 🔒 Error handling and logging
+- 💾 SQLite database integration
+- 🛠️ Basic menu and toolbar system
 
 ## 📄 License
 

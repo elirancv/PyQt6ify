@@ -29,9 +29,10 @@ class MainWindow(QMainWindow):
         self.config = config
         self.db_connection = None
         
-        # Initialize theme manager
-        self.theme_manager = ThemeManager(config_dir=os.path.join(os.path.dirname(__file__), "config"))
-        self.theme_manager.apply_theme(self.config.get_app_setting('theme'))
+        # Initialize theme manager with app instance and config
+        self.theme_manager = ThemeManager(QApplication.instance(), self.config)
+        current_theme = self.config.get_app_setting('theme', 'light')  # Default to light if not set
+        self.theme_manager.apply_theme(current_theme)
         
         self.init_ui()
 

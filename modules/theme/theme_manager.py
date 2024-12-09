@@ -1,35 +1,30 @@
 """
-Theme manager for handling application themes.
+Theme manager for PyQt6ify Pro.
+Handles theme loading, switching, and persistence.
 """
 
+import os
+import json
+import logging
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtCore import Qt
-import logging
-import json
-import os
-import traceback
+from config.app_config import Config
+
+# Configure logging to use the centralized app.log
+logger = logging.getLogger(__name__)
 
 class ThemeManager:
-    """Manages application themes including loading, saving, and applying themes."""
+    """Manages application themes."""
     
-    def __init__(self, config_dir="config"):
+    def __init__(self, app: QApplication, config: Config):
         """Initialize the theme manager."""
-        self.config_dir = config_dir
+        self.app = app
+        self.config = config
         self.current_theme = "light"
         
-        # Configure logging
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s | %(levelname)s | %(message)s',
-            handlers=[
-                logging.FileHandler('theme_manager.log'),
-                logging.StreamHandler()
-            ]
-        )
-        
-        logging.info("Initializing ThemeManager")
-        logging.debug(f"Config directory: {config_dir}")
+        logger.info("Theme manager initialized")
+        logger.debug(f"Config directory: {config.config_dir}")
         
         self.themes = {
             "light": {
@@ -76,28 +71,28 @@ class ThemeManager:
     
     def _load_themes(self):
         """Load themes from the themes directory."""
-        theme_file = os.path.join(self.config_dir, "themes.json")
+        theme_file = os.path.join(self.config.config_dir, "themes.json")
         if os.path.exists(theme_file):
             try:
                 with open(theme_file, 'r') as f:
                     custom_themes = json.load(f)
                 self.themes.update(custom_themes)
-                logging.info(f"Loaded {len(custom_themes)} custom themes")
+                logger.info(f"Loaded {len(custom_themes)} custom themes")
             except Exception as e:
-                logging.error(f"Error loading themes: {e}")
+                logger.error(f"Error loading themes: {e}")
     
     def _save_themes(self):
         """Save themes to the themes directory."""
-        theme_file = os.path.join(self.config_dir, "themes.json")
+        theme_file = os.path.join(self.config.config_dir, "themes.json")
         try:
             # Only save custom themes (not built-in ones)
             custom_themes = {k: v for k, v in self.themes.items() 
                            if k not in ["light", "dark"]}
             with open(theme_file, 'w') as f:
                 json.dump(custom_themes, f, indent=4)
-            logging.info(f"Saved {len(custom_themes)} custom themes")
+            logger.info(f"Saved {len(custom_themes)} custom themes")
         except Exception as e:
-            logging.error(f"Error saving themes: {e}")
+            logger.error(f"Error saving themes: {e}")
     
     def get_available_themes(self):
         """Get a list of available theme names."""
@@ -109,16 +104,16 @@ class ThemeManager:
     
     def apply_theme(self, theme_name):
         """Apply a theme to the application."""
-        logging.info(f"Attempting to apply theme: {theme_name}")
+        logger.info(f"Attempting to apply theme: {theme_name}")
         
         if theme_name not in self.themes:
-            logging.error(f"Theme '{theme_name}' not found in available themes: {list(self.themes.keys())}")
+            logger.error(f"Theme '{theme_name}' not found in available themes: {list(self.themes.keys())}")
             return False
         
         try:
             theme = self.themes[theme_name]
             palette = QPalette()
-            logging.debug("Creating new QPalette")
+            logger.debug("Creating new QPalette")
             
             # Map theme colors to palette roles
             role_map = {
@@ -141,37 +136,32 @@ class ThemeManager:
                 "linkVisited": QPalette.ColorRole.LinkVisited
             }
             
-            logging.debug("Applying colors to palette...")
+            logger.debug("Applying colors to palette...")
             # Apply colors to all color groups
             for theme_key, color_str in theme.items():
                 if theme_key in role_map:
                     try:
                         color = QColor(color_str)
-                        logging.debug(f"Setting {theme_key} to {color_str}")
+                        logger.debug(f"Setting {theme_key} to {color_str}")
                         for group in [QPalette.ColorGroup.Active, 
                                     QPalette.ColorGroup.Inactive, 
                                     QPalette.ColorGroup.Disabled]:
                             palette.setColor(group, role_map[theme_key], color)
                     except Exception as e:
-                        logging.error(f"Error setting color {theme_key}: {str(e)}")
+                        logger.error(f"Error setting color {theme_key}: {str(e)}")
                         return False
             
             # Apply palette first
-            app = QApplication.instance()
-            if not app:
-                logging.error("No QApplication instance found")
-                return False
-                
-            logging.debug("Applying palette to application")
+            logger.debug("Applying palette to application")
             try:
-                app.setPalette(palette)
+                self.app.setPalette(palette)
             except Exception as e:
-                logging.error(f"Error setting palette: {str(e)}")
-                logging.error(traceback.format_exc())
+                logger.error(f"Error setting palette: {str(e)}")
+                logger.error(traceback.format_exc())
                 return False
             
             # Then apply stylesheet
-            logging.debug("Building stylesheet")
+            logger.debug("Building stylesheet")
             stylesheet = f"""
                 QMenuBar {{
                     background-color: {theme["window"]};
@@ -193,43 +183,43 @@ class ThemeManager:
             """
             
             try:
-                logging.debug("Applying stylesheet")
-                app.setStyleSheet(stylesheet)
+                logger.debug("Applying stylesheet")
+                self.app.setStyleSheet(stylesheet)
                 self.current_theme = theme_name
-                logging.info(f"Successfully applied theme: {theme_name}")
+                logger.info(f"Successfully applied theme: {theme_name}")
                 return True
             except Exception as e:
-                logging.error(f"Error applying stylesheet: {str(e)}")
-                logging.error(traceback.format_exc())
+                logger.error(f"Error applying stylesheet: {str(e)}")
+                logger.error(traceback.format_exc())
                 return False
                 
         except Exception as e:
-            logging.error(f"Error applying theme {theme_name}: {str(e)}")
-            logging.error(traceback.format_exc())
+            logger.error(f"Error applying theme {theme_name}: {str(e)}")
+            logger.error(traceback.format_exc())
             return False
     
     def create_theme(self, name, colors):
         """Create a new theme."""
         if name in self.themes:
-            logging.error(f"Theme '{name}' already exists")
+            logger.error(f"Theme '{name}' already exists")
             return False
         
         self.themes[name] = colors
         self._save_themes()
-        logging.info(f"Created new theme: {name}")
+        logger.info(f"Created new theme: {name}")
         return True
     
     def delete_theme(self, name):
         """Delete a theme."""
         if name not in self.themes:
-            logging.error(f"Theme '{name}' not found")
+            logger.error(f"Theme '{name}' not found")
             return False
         
         if name in ["light", "dark"]:
-            logging.error("Cannot delete built-in themes")
+            logger.error("Cannot delete built-in themes")
             return False
         
         del self.themes[name]
         self._save_themes()
-        logging.info(f"Deleted theme: {name}")
+        logger.info(f"Deleted theme: {name}")
         return True
