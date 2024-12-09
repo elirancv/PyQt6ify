@@ -18,4 +18,6 @@ def test_theme_manager_creation(qapp):
     
     # Test applying theme
     theme_manager.apply_theme('light')
-    assert theme_manager.get_current_theme() == 'light'
+    current_theme = theme_manager.get_current_theme()
+    assert isinstance(current_theme, dict)
+    assert current_theme['name'] == 'light'
