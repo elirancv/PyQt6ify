@@ -138,13 +138,16 @@ class Config:
         """Get enabled modules configuration."""
         try:
             return {
-                module: self.getboolean('Modules', module)
-                for module in self.default_config['Modules'].keys()
+                'logging': self.getboolean('Modules', 'logging'),
+                'database': self.getboolean('Modules', 'database'),
+                'menu': self.getboolean('Modules', 'menu'),
+                'toolbar': self.getboolean('Modules', 'toolbar'),
+                'status_bar': self.getboolean('Modules', 'status_bar')
             }
         except Exception as e:
             logger.error(f"Error getting modules configuration: {str(e)}")
-            return self.default_config['Modules']
-            
+            return {}
+
     @property
     def about_info(self):
         """Get about dialog information."""
@@ -177,8 +180,15 @@ class Config:
     @property
     def application_settings(self):
         """Get application settings."""
-        return self.config['Application']
-        
+        try:
+            return {
+                'name': self.get('Application', 'name'),
+                'debug': self.get('Application', 'debug')
+            }
+        except Exception as e:
+            logger.error(f"Error getting application settings: {str(e)}")
+            return {}
+
     @property
     def window_settings(self):
         """Get window settings."""
@@ -187,12 +197,12 @@ class Config:
                 'start_maximized': self.getboolean('Window', 'start_maximized'),
                 'screen_width': self.getint('Window', 'screen_width'),
                 'screen_height': self.getint('Window', 'screen_height'),
-                'theme': self.get('Window', 'theme', fallback='light')
+                'theme': self.get('Window', 'theme')
             }
         except Exception as e:
             logger.error(f"Error getting window settings: {str(e)}")
             return {}
-            
+
     @window_settings.setter
     def window_settings(self, settings):
         """Set window settings."""
@@ -213,10 +223,10 @@ class Config:
         """Get about settings."""
         try:
             return {
-                'author': self.get('About', 'Author', fallback=self.default_config['About']['Author']),
-                'description': self.get('About', 'Description', fallback=self.default_config['About']['Description']),
-                'website': self.get('About', 'Website', fallback=self.default_config['About']['Website']),
-                'icon': self.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
+                'author': self.get('About', 'Author'),
+                'description': self.get('About', 'Description'),
+                'website': self.get('About', 'Website'),
+                'icon': self.get('About', 'Icon')
             }
         except Exception as e:
             logger.error(f"Error getting about settings: {str(e)}")
