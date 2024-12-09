@@ -91,9 +91,7 @@ class Config:
         try:
             if not self.config.has_section(section):
                 return fallback
-            if not self.config.has_option(section, option):
-                return fallback
-            return self.config.get(section, option)
+            return self.config.get(section, option, fallback=fallback)
         except Exception as e:
             logger.error(f"Error getting config value [{section}][{option}]: {str(e)}")
             return fallback
@@ -117,10 +115,13 @@ class Config:
                 raise ConfigError(f"Section not found: {section}")
             if not self.config.has_option(section, option):
                 raise ConfigError(f"Option not found: {option} in section {section}")
-            return self.config.getint(section, option)
-        except Exception as e:
+            try:
+                return self.config.getint(section, option)
+            except ValueError as e:
+                raise ConfigError(f"Failed to get integer value: {str(e)}")
+        except ConfigError as e:
             logger.error(f"Error getting integer config value [{section}][{option}]: {str(e)}")
-            raise ConfigError(f"Failed to get integer value: {str(e)}")
+            raise
 
     def set(self, section, option, value):
         """Set a configuration value."""
@@ -205,6 +206,7 @@ class Config:
             self.save_config()
         except Exception as e:
             logger.error(f"Error setting window settings: {str(e)}")
+            raise ConfigError(f"Failed to set window settings: {str(e)}")
 
     @property
     def about_settings(self):
@@ -218,4 +220,4 @@ class Config:
             }
         except Exception as e:
             logger.error(f"Error getting about settings: {str(e)}")
-            return self.default_config['About']
+            return {}
