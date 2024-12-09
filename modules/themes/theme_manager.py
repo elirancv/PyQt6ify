@@ -73,6 +73,7 @@ class ThemeManager:
     def _get_default_light_theme(self):
         """Get the default light theme colors."""
         return {
+            "name": "light",
             "window": "#ffffff",
             "windowText": "#2c3e50",
             "base": "#ffffff",
@@ -95,19 +96,20 @@ class ThemeManager:
     def _get_default_dark_theme(self):
         """Get the default dark theme colors."""
         return {
+            "name": "dark",
             "window": "#1a1a1a",
             "windowText": "#ecf0f1",
             "base": "#2c2c2c",
             "alternateBase": "#353535",
             "text": "#ecf0f1",
-            "button": "#353535",
+            "button": "#2c2c2c",
             "buttonText": "#ecf0f1",
             "brightText": "#ffffff",
             "light": "#404040",
             "midlight": "#353535",
-            "dark": "#202020",
+            "dark": "#1a1a1a",
             "mid": "#2c2c2c",
-            "shadow": "#151515",
+            "shadow": "#000000",
             "highlight": "#3498db",
             "highlightedText": "#ffffff",
             "link": "#3498db",
@@ -117,34 +119,45 @@ class ThemeManager:
     def _save_themes(self):
         """Save themes to the themes directory."""
         try:
-            # Only save custom themes (not built-in ones)
-            custom_themes = {k: v for k, v in self.themes.items() 
-                           if k not in ["light", "dark"]}
+            # Only save custom themes, not default ones
+            custom_themes = {name: theme for name, theme in self.themes.items()
+                           if name not in ["light", "dark"]}
+            
             with open(self.themes_file, 'w') as f:
                 json.dump(custom_themes, f, indent=4)
-            logger.info(f"Saved {len(custom_themes)} custom themes")
+                
+            logger.info(f"Saved {len(custom_themes)} custom themes to {self.themes_file}")
+            return True
+            
         except Exception as e:
-            logger.error(f"Error saving themes: {e}")
+            logger.error(f"Error saving themes: {str(e)}")
+            return False
     
     def get_available_themes(self):
         """Get a list of available theme names."""
         return list(self.themes.keys())
     
     def get_current_theme(self):
-        """Get the name of the current theme."""
-        return self.current_theme
+        """Get the current theme."""
+        if not self.current_theme or self.current_theme not in self.themes:
+            return self.themes[self.default_theme]
+        return self.themes[self.current_theme]
     
     def set_window_dark_mode(self, window, is_dark):
-        """Set dark mode for a specific window."""
+        """Set dark mode for a specific window.
+        
+        Args:
+            window: The window to set dark mode for
+            is_dark (bool): Whether to enable dark mode
+        """
         if not self.dwmapi:
             return
             
         try:
             import ctypes
-            hwnd = window.winId().__int__()
-            value = ctypes.c_int(1 if is_dark else 0)
+            value = ctypes.c_int(is_dark)
             self.dwmapi.DwmSetWindowAttribute(
-                hwnd,
+                int(window.winId()),
                 self.DWMWA_USE_IMMERSIVE_DARK_MODE,
                 ctypes.byref(value),
                 ctypes.sizeof(value)
@@ -250,95 +263,101 @@ class ThemeManager:
         if theme_name in self.themes:
             success = self.apply_theme(theme_name)
             if success:
-                # Get current window settings
-                settings = self.config.window_settings
-                # Update theme
-                settings['theme'] = theme_name
-                # Save updated settings back to config
-                try:
-                    if not self.config.config.has_section('Window'):
-                        self.config.config.add_section('Window')
-                    self.config.config.set('Window', 'theme', theme_name)
-                    self.config.save_config()
-                    logger.info(f"Saved theme preference: {theme_name}")
-                except Exception as e:
-                    logger.error(f"Error saving theme preference: {str(e)}")
-            return success
+                # Save to config
+                self.config.set('Window', 'theme', theme_name)
+                logger.info(f"Switched to theme: {theme_name}")
+                return True
+            
+        logger.error(f"Failed to switch to theme: {theme_name}")
         return False
-
+    
     def load_theme_from_file(self, file_path):
         """Load a theme from a JSON file."""
         try:
             with open(file_path, 'r') as f:
-                theme_data = json.load(f)
-                
-            if isinstance(theme_data, dict):
-                if "name" in theme_data and "colors" in theme_data:
-                    theme_name = theme_data["name"]
-                    theme_colors = theme_data["colors"]
-                    self.themes[theme_name] = theme_colors
-                    self._save_themes()
-                    logger.info(f"Successfully loaded theme {theme_name} from {file_path}")
-                    return True
-            logger.error("Invalid theme file format")
-            return False
+                theme = json.load(f)
+            
+            # Validate theme
+            if not isinstance(theme, dict):
+                raise ValueError("Theme must be a dictionary")
+            
+            # Add theme
+            name = os.path.splitext(os.path.basename(file_path))[0]
+            self.themes[name] = theme
+            self._save_themes()
+            
+            logger.info(f"Loaded theme from {file_path}")
+            return True
+            
         except Exception as e:
-            logger.error(f"Error loading theme from file: {e}")
+            logger.error(f"Error loading theme from {file_path}: {str(e)}")
             return False
-
+    
     def export_theme(self, theme_name, file_path):
         """Export a theme to a JSON file."""
         if theme_name not in self.themes:
-            logger.error(f"Theme {theme_name} not found")
+            logger.error(f"Theme '{theme_name}' not found")
             return False
             
-        theme_data = {
-            "name": theme_name,
-            "colors": self.themes[theme_name]
-        }
-        
         try:
             with open(file_path, 'w') as f:
-                json.dump(theme_data, f, indent=4)
-            logger.info(f"Successfully exported theme {theme_name} to {file_path}")
+                json.dump(self.themes[theme_name], f, indent=4)
+                
+            logger.info(f"Exported theme {theme_name} to {file_path}")
             return True
+            
         except Exception as e:
-            logger.error(f"Error exporting theme: {e}")
+            logger.error(f"Error exporting theme {theme_name}: {str(e)}")
             return False
-
+    
     def create_theme(self, name, colors):
         """Create a new theme."""
         if name in self.themes:
             logger.error(f"Theme '{name}' already exists")
             return False
-        
-        self.themes[name] = colors
-        self._save_themes()
-        logger.info(f"Created new theme: {name}")
-        return True
+            
+        try:
+            # Validate colors
+            for color in colors.values():
+                if not self._is_valid_color(color):
+                    raise ValueError(f"Invalid color: {color}")
+            
+            # Add theme
+            self.themes[name] = colors
+            self._save_themes()
+            
+            logger.info(f"Created new theme: {name}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error creating theme {name}: {str(e)}")
+            return False
     
     def delete_theme(self, name):
         """Delete a theme."""
         if name not in self.themes:
             logger.error(f"Theme '{name}' not found")
             return False
-        
+            
         if name in ["light", "dark"]:
-            logger.error("Cannot delete built-in themes")
+            logger.error("Cannot delete default themes")
             return False
-        
-        del self.themes[name]
-        self._save_themes()
-        logger.info(f"Deleted theme: {name}")
-        return True
-
+            
+        try:
+            del self.themes[name]
+            self._save_themes()
+            
+            logger.info(f"Deleted theme: {name}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error deleting theme {name}: {str(e)}")
+            return False
+    
     def _is_valid_color(self, color_str):
         """Validate if a string is a valid color."""
         try:
-            color = QColor(color_str)
-            return color.isValid() and (
-                color_str.startswith('#') and 
-                len(color_str) in [4, 7, 9]  # #RGB, #RRGGBB, or #RRGGBBAA
-            )
+            QColor(color_str)
+            return True
         except:
             return False

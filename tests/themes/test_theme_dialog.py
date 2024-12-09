@@ -3,7 +3,7 @@ Test theme dialog functionality.
 """
 
 import pytest
-from PyQt6.QtWidgets import QDialog
+from PyQt6.QtWidgets import QDialog, QListWidget, QPushButton
 from modules.themes.theme_dialog import ThemeDialog
 from modules.themes.theme_manager import ThemeManager
 from modules.config.config import Config
@@ -25,12 +25,15 @@ def test_theme_dialog_list_themes(qapp, theme_manager):
     dialog = ThemeDialog(theme_manager)
     theme_list = dialog.findChild(QListWidget)
     assert theme_list is not None
-    assert theme_list.count() > 0
     
-    # Check that each theme in the manager is listed
+    # Check that themes are loaded
+    themes = theme_manager.get_available_themes()
+    assert theme_list.count() == len(themes)
+    
+    # Check that each theme is listed
     theme_items = [theme_list.item(i).text() for i in range(theme_list.count())]
-    for theme in theme_manager.get_themes():
-        assert theme['name'] in theme_items
+    for theme in themes:
+        assert theme in theme_items
 
 def test_theme_dialog_current_theme(qapp, theme_manager):
     """Test that current theme is selected in the dialog"""
@@ -40,58 +43,70 @@ def test_theme_dialog_current_theme(qapp, theme_manager):
     # Get current theme
     current_theme = theme_manager.get_current_theme()
     
-    # Find the selected item in the list
+    # Check that current theme is selected
     selected_items = theme_list.selectedItems()
     assert len(selected_items) == 1
     assert selected_items[0].text() == current_theme['name']
 
 def test_theme_dialog_change_theme(qapp, theme_manager, monkeypatch):
     """Test changing theme through the dialog"""
+    # Create dialog
     dialog = ThemeDialog(theme_manager)
     theme_list = dialog.findChild(QListWidget)
     
     # Mock theme manager's apply_theme method
-    applied_theme = None
+    apply_called = {'theme': None}
     def mock_apply_theme(theme_name):
-        nonlocal applied_theme
-        applied_theme = theme_name
+        apply_called['theme'] = theme_name
+        return True
     monkeypatch.setattr(theme_manager, 'apply_theme', mock_apply_theme)
     
     # Select a different theme
+    available_themes = theme_manager.get_available_themes()
+    current_theme = theme_manager.get_current_theme()['name']
+    new_theme = next(theme for theme in available_themes if theme != current_theme)
+    
     for i in range(theme_list.count()):
-        item = theme_list.item(i)
-        if item.text() != theme_manager.get_current_theme()['name']:
-            theme_list.setCurrentItem(item)
+        if theme_list.item(i).text() == new_theme:
+            theme_list.setCurrentRow(i)
             break
     
-    # Simulate clicking OK
-    dialog.accept()
+    # Click apply button
+    apply_button = dialog.findChild(QPushButton, "")
+    apply_button.click()
     
     # Verify theme was changed
-    assert applied_theme is not None
-    assert applied_theme != theme_manager.get_current_theme()['name']
+    assert apply_called['theme'] == new_theme
+    assert not dialog.isVisible()
 
 def test_theme_dialog_cancel(qapp, theme_manager, monkeypatch):
     """Test canceling theme change"""
+    # Create dialog
     dialog = ThemeDialog(theme_manager)
     theme_list = dialog.findChild(QListWidget)
     
     # Mock theme manager's apply_theme method
-    theme_changed = False
+    apply_called = {'theme': None}
     def mock_apply_theme(theme_name):
-        nonlocal theme_changed
-        theme_changed = True
+        apply_called['theme'] = theme_name
+        return True
     monkeypatch.setattr(theme_manager, 'apply_theme', mock_apply_theme)
     
     # Select a different theme
+    available_themes = theme_manager.get_available_themes()
+    current_theme = theme_manager.get_current_theme()['name']
+    new_theme = next(theme for theme in available_themes if theme != current_theme)
+    
     for i in range(theme_list.count()):
-        item = theme_list.item(i)
-        if item.text() != theme_manager.get_current_theme()['name']:
-            theme_list.setCurrentItem(item)
+        if theme_list.item(i).text() == new_theme:
+            theme_list.setCurrentRow(i)
             break
     
-    # Simulate clicking Cancel
-    dialog.reject()
+    # Find and click cancel button
+    buttons = dialog.findChildren(QPushButton)
+    cancel_button = next(button for button in buttons if button.text() == "Cancel")
+    cancel_button.click()
     
     # Verify theme was not changed
-    assert not theme_changed
+    assert apply_called['theme'] is None
+    assert not dialog.isVisible()
