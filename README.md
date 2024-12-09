@@ -4,7 +4,11 @@
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.4.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Tests](https://github.com/elirancv/PyQt6ify-Pro/workflows/Tests/badge.svg)](https://github.com/elirancv/PyQt6ify-Pro/actions)
+[![Tests](https://img.shields.io/badge/Tests-Pending-yellow.svg)](https://github.com/elirancv/PyQt6ify-Pro/actions)
+[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/pulls)
+[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/stargazers)
+[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/blob/main/LICENSE.md)
 
 A professional Qt6-based desktop application framework that provides a robust foundation for building modern, feature-rich GUI applications in Python. This framework emphasizes modularity, extensibility, and modern UI/UX practices.
 
