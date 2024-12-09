@@ -1,17 +1,18 @@
 # Core Dependencies
-PyQt6>=6.7.1
-python-dateutil>=2.9.0.post0
-loguru>=0.7.3
-configparser>=5.3.0
-pathlib>=1.0.1
+PyQt6==6.7.1  # Latest stable version
+python-dateutil==2.9.0.post0  # Latest stable version
+loguru==0.7.3  # Latest stable version
+configparser==7.1.0  # Latest stable version
+pathlib==1.0.1  # Latest stable version
 
 # Testing Dependencies
-pytest==8.3.4
-pytest-qt==4.4.0
-pytest-cov>=6.0.0
-pytest-mock>=3.14.0
+pytest==8.3.4  # Latest stable version
+pytest-qt==4.4.0  # Latest stable version
+pytest-cov==6.0.0  # Latest stable version
+pytest-mock==3.14.0  # Latest stable version
+pytest-timeout==2.3.1  # Latest stable version
 
 # Development Tools
-black>=23.12.1
-flake8>=6.1.0
-mypy>=1.8.0
+black==24.10.0  # Latest stable version
+flake8==7.1.1  # Latest stable version
+mypy==1.13.0  # Latest stable version

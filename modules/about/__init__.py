@@ -8,13 +8,14 @@ from PyQt6.QtCore import Qt
 from loguru import logger
 import os
 
-def show_about_dialog(config, parent=None):
+def show_about_dialog(config, parent=None, test_mode=False):
     """
     Show the About dialog with enhanced application information,
     dynamically loading data from the config.
 
     :param config: The Config object to retrieve application settings.
     :param parent: Optional parent window for the dialog.
+    :param test_mode: If True, dialog will not be shown modally (for testing).
     :return: The created QMessageBox dialog.
     """
     try:
@@ -88,7 +89,8 @@ def show_about_dialog(config, parent=None):
         about.setDefaultButton(QMessageBox.StandardButton.Ok)
         
         # Show the dialog modally
-        about.exec()
+        if not test_mode:
+            about.exec()
         return about
         
     except Exception as e:
