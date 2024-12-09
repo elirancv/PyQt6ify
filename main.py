@@ -7,6 +7,11 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 from config.app_config import Config, ConfigError
 from modules import error_handling, database, menu, status_bar, toolbar, about
+from modules.menu import MenuBar
+from modules.toolbar import ToolBar
+from modules.status_bar import StatusBar
+from modules.theme.theme_manager import ThemeManager
+from modules.theme.theme_dialog import ThemeDialog
 
 class MainWindow(QMainWindow):
     """
@@ -23,6 +28,11 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.config = config
         self.db_connection = None
+        
+        # Initialize theme manager
+        self.theme_manager = ThemeManager(config_dir=os.path.join(os.path.dirname(__file__), "config"))
+        self.theme_manager.apply_theme(self.config.get_app_setting('theme'))
+        
         self.init_ui()
 
     def init_ui(self):
@@ -74,19 +84,26 @@ class MainWindow(QMainWindow):
         try:
             if self.config.is_module_enabled('menu'):
                 logger.info("Creating menu")
-                menu.create_menu(self, self.config)
+                self.setup_menu()
             
             if self.config.is_module_enabled('status_bar'):
                 logger.info("Creating status bar")
-                status_bar.create_status_bar(self)
-                self.statusBar().showMessage("Ready")
+                self.status_bar = StatusBar(self)
+                self.setStatusBar(self.status_bar)
+                self.status_bar.showMessage("Ready")
             
             if self.config.is_module_enabled('toolbar'):
                 logger.info("Creating toolbar")
-                toolbar.create_toolbar(self)
+                self.tool_bar = ToolBar(self)
+                self.addToolBar(self.tool_bar)
         except Exception as e:
             logger.error(f"Error initializing components: {str(e)}")
             raise
+
+    def setup_menu(self):
+        """Set up the application menu."""
+        self.menu_bar = MenuBar(self)
+        self.setMenuBar(self.menu_bar)
 
     def init_database(self):
         """Initialize database connection if enabled."""
@@ -97,6 +114,15 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 logger.error(f"Database initialization failed: {str(e)}")
                 error_handling.show_error_dialog("Database Error", str(e))
+
+    def show_theme_dialog(self):
+        """Show the theme management dialog."""
+        dialog = ThemeDialog(self.theme_manager, self)
+        dialog.exec()
+        
+        # Save selected theme to config
+        current_theme = self.theme_manager.get_current_theme()
+        self.config.set_app_setting('theme', current_theme)
 
     def closeEvent(self, event):
         """

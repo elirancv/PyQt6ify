@@ -5,11 +5,21 @@ A modern, modular PyQt6-based desktop application framework with built-in config
 ## 🌟 Features
 
 - 🎨 Modern and responsive user interface
+  - Customizable themes with live preview
+  - Light/Dark mode support
+  - Runtime theme switching with persistence
+  - Status bar feedback for operations
 - ⚙️ Modular architecture for easy extension
 - 📝 Comprehensive configuration management
 - 🔒 Built-in error handling and logging
+  - Detailed operation logging
+  - Error tracking and reporting
+  - Status feedback for user actions
 - 💾 SQLite database integration
-- 🛠️ Customizable toolbar and menu system
+- 🛠️ Modern menu system
+  - Icon-based menu items
+  - Keyboard shortcuts
+  - Status tips
 - 📊 Status bar for user feedback
 - 🎯 Resource management for icons and assets
 
@@ -27,6 +37,9 @@ PyQt6ify-Pro/
 │   ├── database.py       # Database operations
 │   ├── error_handling.py # Error management
 │   ├── menu.py          # Menu system
+│   ├── theme/           # Theme management
+│   │   ├── theme_dialog.py    # Theme settings dialog
+│   │   └── theme_manager.py   # Theme engine
 │   ├── status_bar.py    # Status bar
 │   └── toolbar.py       # Toolbar functionality
 ├── resources/            # Application resources

@@ -1,60 +1,77 @@
-import logging
+"""
+Toolbar module for PyQt6ify Pro.
+Provides toolbar functionality with icons and actions.
+"""
+
 from PyQt6.QtWidgets import QToolBar
 from PyQt6.QtGui import QAction, QIcon
-from modules.status_bar import update_status_bar
+import os
+from loguru import logger
 
-def create_toolbar(window):
-    """
-    Create a default toolbar for the application window with icons for each option.
+class ToolBar(QToolBar):
+    """Custom toolbar for the application."""
     
-    :param window: The main application window.
-    """
-    try:
-        toolbar = QToolBar("Main Toolbar")
-        window.addToolBar(toolbar)
-
-        # File actions
-        new_action = QAction(QIcon('resources/icons/new.png'), 'New', window)
-        open_action = QAction(QIcon('resources/icons/open.png'), 'Open', window)
-        save_action = QAction(QIcon('resources/icons/save.png'), 'Save', window)
-        
-        toolbar.addAction(new_action)
-        toolbar.addAction(open_action)
-        toolbar.addAction(save_action)
-        toolbar.addSeparator()
-        
-        # Edit actions
-        undo_action = QAction(QIcon('resources/icons/undo.png'), 'Undo', window)
-        redo_action = QAction(QIcon('resources/icons/redo.png'), 'Redo', window)
-        cut_action = QAction(QIcon('resources/icons/cut.png'), 'Cut', window)
-        copy_action = QAction(QIcon('resources/icons/copy.png'), 'Copy', window)
-        paste_action = QAction(QIcon('resources/icons/paste.png'), 'Paste', window)
-        
-        toolbar.addAction(undo_action)
-        toolbar.addAction(redo_action)
-        toolbar.addSeparator()
-        toolbar.addAction(cut_action)
-        toolbar.addAction(copy_action)
-        toolbar.addAction(paste_action)
-        toolbar.addSeparator()
-        
-        # Exit action
-        exit_action = QAction(QIcon('resources/icons/exit.png'), 'Exit', window)
-        exit_action.triggered.connect(window.close)
-        toolbar.addAction(exit_action)
-        
-        logging.info("Toolbar created successfully")
-        
-        # Connect actions to status bar updates
-        new_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "New file created"))
-        open_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "File opened"))
-        save_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "File saved"))
-        undo_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "Undo action"))
-        redo_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "Redo action"))
-        cut_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "Cut action"))
-        copy_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "Copy action"))
-        paste_action.triggered.connect(lambda: update_status_bar(window.statusBar(), "Paste action"))
-        
-    except Exception as e:
-        logging.error(f"Failed to create toolbar: {e}")
-
+    def __init__(self, parent=None):
+        """Initialize the toolbar."""
+        super().__init__(parent)
+        self.parent = parent
+        self.setup_toolbar()
+    
+    def setup_toolbar(self):
+        """Set up the toolbar with actions and icons."""
+        try:
+            # New
+            new_action = self.create_action('new.png', 'New', 'Create new file', 'Ctrl+N')
+            self.addAction(new_action)
+            
+            # Open
+            open_action = self.create_action('open.png', 'Open', 'Open file', 'Ctrl+O')
+            self.addAction(open_action)
+            
+            # Save
+            save_action = self.create_action('save.png', 'Save', 'Save file', 'Ctrl+S')
+            self.addAction(save_action)
+            
+            self.addSeparator()
+            
+            # Cut
+            cut_action = self.create_action('cut.png', 'Cut', 'Cut selection', 'Ctrl+X')
+            self.addAction(cut_action)
+            
+            # Copy
+            copy_action = self.create_action('copy.png', 'Copy', 'Copy selection', 'Ctrl+C')
+            self.addAction(copy_action)
+            
+            # Paste
+            paste_action = self.create_action('paste.png', 'Paste', 'Paste', 'Ctrl+V')
+            self.addAction(paste_action)
+            
+            self.addSeparator()
+            
+            # Undo
+            undo_action = self.create_action('undo.png', 'Undo', 'Undo last action', 'Ctrl+Z')
+            self.addAction(undo_action)
+            
+            # Redo
+            redo_action = self.create_action('redo.png', 'Redo', 'Redo last action', 'Ctrl+Y')
+            self.addAction(redo_action)
+            
+        except Exception as e:
+            logger.error(f"Error setting up toolbar: {e}")
+    
+    def create_action(self, icon_name, text, status_tip, shortcut=None):
+        """Create a QAction with the specified properties."""
+        try:
+            icon_path = os.path.join('resources', 'icons', icon_name)
+            action = QAction(QIcon(icon_path), text, self)
+            
+            if shortcut:
+                action.setShortcut(shortcut)
+            
+            action.setStatusTip(status_tip)
+            return action
+            
+        except Exception as e:
+            logger.error(f"Error creating action {text}: {e}")
+            # Return a basic action without icon if there's an error
+            return QAction(text, self)

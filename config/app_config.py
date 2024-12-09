@@ -39,6 +39,16 @@ class Config:
             'status_bar': True
         }
 
+        # Default settings
+        self.default_config = {
+            'APP': {
+                'start_maximized': 'True',
+                'screen_width': '1024',
+                'screen_height': '768',
+                'theme': 'light'  # Add default theme setting
+            }
+        }
+
         # Ensure resources directory exists
         self._ensure_resource_paths()
         
@@ -78,7 +88,7 @@ class Config:
             
             # Validate required sections and options
             required_settings = {
-                'APP': ['start_maximized', 'screen_width', 'screen_height']
+                'APP': ['start_maximized', 'screen_width', 'screen_height', 'theme']
             }
             
             for section, options in required_settings.items():
@@ -101,11 +111,7 @@ class Config:
             ConfigError: If default configuration cannot be created.
         """
         try:
-            self.config['APP'] = {
-                'start_maximized': 'True',
-                'screen_width': '1024',
-                'screen_height': '768'
-            }
+            self.config['APP'] = self.default_config['APP']
             
             os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
             with open(self.config_file, 'w') as configfile:
@@ -176,3 +182,31 @@ class Config:
         except Exception as e:
             logging.error(f"Error retrieving config value {section}.{option}: {str(e)}")
             return fallback
+            
+    def set_app_setting(self, option, value):
+        """
+        Set a setting in the APP section and save to file.
+        
+        Args:
+            option (str): The option to set.
+            value: The value to set.
+            
+        Returns:
+            bool: True if successful, False otherwise.
+        """
+        try:
+            if not self.config.has_section('APP'):
+                self.config.add_section('APP')
+            
+            self.config.set('APP', option, str(value))
+            
+            # Save changes to file
+            with open(self.config_file, 'w') as configfile:
+                self.config.write(configfile)
+                
+            logging.info(f"Successfully set app setting {option}={value}")
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error setting app setting {option}: {str(e)}")
+            return False
