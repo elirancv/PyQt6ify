@@ -3,75 +3,46 @@ Toolbar module for PyQt6ify Pro.
 Provides toolbar functionality with icons and actions.
 """
 
+import os
+from pathlib import Path
 from PyQt6.QtWidgets import QToolBar
 from PyQt6.QtGui import QAction, QIcon
-import os
 from loguru import logger
 
-class ToolBar(QToolBar):
-    """Custom toolbar for the application."""
+def create_toolbar(window):
+    """Create a toolbar for the application window."""
+    toolbar = QToolBar(window)
+    icons_dir = Path('icons')
     
-    def __init__(self, parent=None):
-        """Initialize the toolbar."""
-        super().__init__(parent)
-        self.parent = parent
-        self.setup_toolbar()
+    def create_action(name, tooltip, shortcut=None):
+        """Helper function to create toolbar actions."""
+        action = QAction(name, window)
+        icon_path = icons_dir / f"{name.lower().replace(' ', '_')}.png"
+        if icon_path.exists():
+            action.setIcon(QIcon(str(icon_path)))
+        action.setToolTip(tooltip)
+        if shortcut:
+            action.setShortcut(shortcut)
+        return action
     
-    def setup_toolbar(self):
-        """Set up the toolbar with actions and icons."""
-        try:
-            # New
-            new_action = self.create_action('new.png', 'New', 'Create new file', 'Ctrl+N')
-            self.addAction(new_action)
-            
-            # Open
-            open_action = self.create_action('open.png', 'Open', 'Open file', 'Ctrl+O')
-            self.addAction(open_action)
-            
-            # Save
-            save_action = self.create_action('save.png', 'Save', 'Save file', 'Ctrl+S')
-            self.addAction(save_action)
-            
-            self.addSeparator()
-            
-            # Cut
-            cut_action = self.create_action('cut.png', 'Cut', 'Cut selection', 'Ctrl+X')
-            self.addAction(cut_action)
-            
-            # Copy
-            copy_action = self.create_action('copy.png', 'Copy', 'Copy selection', 'Ctrl+C')
-            self.addAction(copy_action)
-            
-            # Paste
-            paste_action = self.create_action('paste.png', 'Paste', 'Paste', 'Ctrl+V')
-            self.addAction(paste_action)
-            
-            self.addSeparator()
-            
-            # Undo
-            undo_action = self.create_action('undo.png', 'Undo', 'Undo last action', 'Ctrl+Z')
-            self.addAction(undo_action)
-            
-            # Redo
-            redo_action = self.create_action('redo.png', 'Redo', 'Redo last action', 'Ctrl+Y')
-            self.addAction(redo_action)
-            
-        except Exception as e:
-            logger.error(f"Error setting up toolbar: {e}")
+    try:
+        # New
+        new_action = create_action('New', 'Create a new file', 'Ctrl+N')
+        toolbar.addAction(new_action)
+        
+        # Open
+        open_action = create_action('Open', 'Open an existing file', 'Ctrl+O')
+        toolbar.addAction(open_action)
+        
+        # Save
+        save_action = create_action('Save', 'Save the current file', 'Ctrl+S')
+        toolbar.addAction(save_action)
+        
+        # Save As
+        save_as_action = create_action('Save As', 'Save the file with a new name', 'Ctrl+Shift+S')
+        toolbar.addAction(save_as_action)
+        
+    except Exception as e:
+        logger.error(f"Failed to create toolbar: {e}")
     
-    def create_action(self, icon_name, text, status_tip, shortcut=None):
-        """Create a QAction with the specified properties."""
-        try:
-            icon_path = os.path.join('resources', 'icons', icon_name)
-            action = QAction(QIcon(icon_path), text, self)
-            
-            if shortcut:
-                action.setShortcut(shortcut)
-            
-            action.setStatusTip(status_tip)
-            return action
-            
-        except Exception as e:
-            logger.error(f"Error creating action {text}: {e}")
-            # Return a basic action without icon if there's an error
-            return QAction(text, self)
+    return toolbar
