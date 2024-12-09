@@ -6,6 +6,37 @@ import os
 from pathlib import Path
 from loguru import logger
 
+class ResourceError(Exception):
+    """Exception raised for resource-related errors."""
+    pass
+
+def get_resource_path(resource_name):
+    """
+    Get the absolute path to a resource.
+    
+    Args:
+        resource_name (str): Name of the resource (e.g. 'icons/app_icon.png')
+        
+    Returns:
+        str: Absolute path to the resource
+        
+    Raises:
+        ResourceError: If resource_name is invalid or resource doesn't exist
+    """
+    if not resource_name:
+        raise ResourceError("Resource name cannot be empty or None")
+        
+    try:
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        resource_path = os.path.join(base_dir, 'resources', resource_name)
+        
+        if not os.path.exists(resource_path):
+            raise ResourceError(f"Resource not found: {resource_name}")
+            
+        return resource_path
+    except Exception as e:
+        raise ResourceError(f"Error accessing resource: {str(e)}")
+
 def create_resources():
     """Create necessary resource directories and files."""
     try:

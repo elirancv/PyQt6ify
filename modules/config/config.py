@@ -89,17 +89,55 @@ class Config:
     def get(self, section, option, fallback=None):
         """Get a configuration value with fallback."""
         try:
-            return self.config.get(section, option, fallback=fallback)
+            if not self.config.has_section(section):
+                return fallback
+            if not self.config.has_option(section, option):
+                return fallback
+            return self.config.get(section, option)
         except Exception as e:
             logger.error(f"Error getting config value [{section}][{option}]: {str(e)}")
             return fallback
+
+    def getboolean(self, section, option):
+        """Get a boolean configuration value."""
+        try:
+            if not self.config.has_section(section):
+                raise ConfigError(f"Section not found: {section}")
+            if not self.config.has_option(section, option):
+                raise ConfigError(f"Option not found: {option} in section {section}")
+            return self.config.getboolean(section, option)
+        except Exception as e:
+            logger.error(f"Error getting boolean config value [{section}][{option}]: {str(e)}")
+            raise ConfigError(f"Failed to get boolean value: {str(e)}")
+
+    def getint(self, section, option):
+        """Get an integer configuration value."""
+        try:
+            if not self.config.has_section(section):
+                raise ConfigError(f"Section not found: {section}")
+            if not self.config.has_option(section, option):
+                raise ConfigError(f"Option not found: {option} in section {section}")
+            return self.config.getint(section, option)
+        except Exception as e:
+            logger.error(f"Error getting integer config value [{section}][{option}]: {str(e)}")
+            raise ConfigError(f"Failed to get integer value: {str(e)}")
+
+    def set(self, section, option, value):
+        """Set a configuration value."""
+        try:
+            if not self.config.has_section(section):
+                raise ConfigError(f"Section not found: {section}")
+            self.config.set(section, option, str(value))
+        except Exception as e:
+            logger.error(f"Error setting config value [{section}][{option}]: {str(e)}")
+            raise ConfigError(f"Failed to set configuration value: {str(e)}")
 
     @property
     def modules_enabled(self):
         """Get enabled modules configuration."""
         try:
             return {
-                module: self.config.getboolean('Modules', module, fallback=True)
+                module: self.getboolean('Modules', module)
                 for module in self.default_config['Modules'].keys()
             }
         except Exception as e:
@@ -111,12 +149,12 @@ class Config:
         """Get about dialog information."""
         try:
             return {
-                'name': self.config.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
-                'version': self.config.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
-                'author': self.config.get('About', 'Author', fallback=self.default_config['About']['Author']),
-                'description': self.config.get('About', 'Description', fallback=self.default_config['About']['Description']),
-                'website': self.config.get('About', 'Website', fallback=self.default_config['About']['Website']),
-                'icon': self.config.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
+                'name': self.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
+                'version': self.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
+                'author': self.get('About', 'Author', fallback=self.default_config['About']['Author']),
+                'description': self.get('About', 'Description', fallback=self.default_config['About']['Description']),
+                'website': self.get('About', 'Website', fallback=self.default_config['About']['Website']),
+                'icon': self.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
             }
         except Exception as e:
             logger.error(f"Error getting about info: {str(e)}")
@@ -127,9 +165,9 @@ class Config:
         """Get application information."""
         try:
             return {
-                'name': self.config.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
-                'version': self.config.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
-                'debug': self.config.getboolean('Application', 'Debug', fallback=False)
+                'name': self.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
+                'version': self.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
+                'debug': self.getboolean('Application', 'Debug')
             }
         except Exception as e:
             logger.error(f"Error getting application info: {str(e)}")
@@ -145,10 +183,10 @@ class Config:
         """Get window settings."""
         try:
             return {
-                'start_maximized': self.config.getboolean('Window', 'start_maximized', fallback=True),
-                'screen_width': self.config.getint('Window', 'screen_width', fallback=1024),
-                'screen_height': self.config.getint('Window', 'screen_height', fallback=768),
-                'theme': self.config.get('Window', 'theme', fallback='light')
+                'start_maximized': self.getboolean('Window', 'start_maximized'),
+                'screen_width': self.getint('Window', 'screen_width'),
+                'screen_height': self.getint('Window', 'screen_height'),
+                'theme': self.get('Window', 'theme', fallback='light')
             }
         except Exception as e:
             logger.error(f"Error getting window settings: {str(e)}")
@@ -173,10 +211,10 @@ class Config:
         """Get about settings."""
         try:
             return {
-                'author': self.config.get('About', 'Author', fallback=self.default_config['About']['Author']),
-                'description': self.config.get('About', 'Description', fallback=self.default_config['About']['Description']),
-                'website': self.config.get('About', 'Website', fallback=self.default_config['About']['Website']),
-                'icon': self.config.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
+                'author': self.get('About', 'Author', fallback=self.default_config['About']['Author']),
+                'description': self.get('About', 'Description', fallback=self.default_config['About']['Description']),
+                'website': self.get('About', 'Website', fallback=self.default_config['About']['Website']),
+                'icon': self.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
             }
         except Exception as e:
             logger.error(f"Error getting about settings: {str(e)}")

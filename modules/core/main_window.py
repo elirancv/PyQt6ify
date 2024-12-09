@@ -95,9 +95,9 @@ class MainWindow(QMainWindow):
     def setup_window_properties(self):
         """Set up basic window properties like title, icon, and size."""
         try:
-            app_name = self.config.get('Application', 'name', 'PyQt6ify Pro')
-            app_version = self.config.get('Application', 'version', '1.0.0')
-            self.setWindowTitle(f"{app_name} v{app_version}")
+            app_name = self.config.get('Application', 'Name', 'PyQt6ify Pro')
+            app_version = self.config.get('Application', 'Version', '1.0.0')
+            self.setWindowTitle(f"{app_name} {app_version}")
             
             # Use icon path from config
             icon_path = self.config.get('About', 'icon', 'resources/icons/app_icon.png')
