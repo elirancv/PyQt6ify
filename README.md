@@ -1,223 +1,256 @@
 # PyQt6ify Pro
 
-A modern, modular PyQt6-based desktop application framework with built-in configuration management, error handling, and database support.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyQt6](https://img.shields.io/badge/PyQt-6.4.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Tests](https://github.com/elirancv/PyQt6ify-Pro/workflows/Tests/badge.svg)](https://github.com/elirancv/PyQt6ify-Pro/actions)
 
-## 🌟 Features
+A professional Qt6-based desktop application framework that provides a robust foundation for building modern, feature-rich GUI applications in Python. This framework emphasizes modularity, extensibility, and modern UI/UX practices.
 
-- 🎨 Modern and responsive user interface
-  - Customizable themes with live preview
-  - Light/Dark mode support
-  - Runtime theme switching with persistence
-  - Status bar feedback for operations
-- ⚙️ Modular architecture for easy extension
-- 📝 Comprehensive configuration management
-- 🔒 Built-in error handling and logging
-  - Detailed operation logging
-  - Error tracking and reporting
-  - Status feedback for user actions
-- 💾 SQLite database integration
-- 🛠️ Modern menu system
+<div align="center">
+  <img src="docs/images/screenshot.png" alt="PyQt6ify Pro Screenshot" width="800"/>
+</div>
+
+## 🌟 Key Features
+
+### 🎨 Modern UI Framework
+- **Dynamic Theme System**
+  - Light/Dark mode with runtime switching
+  - Custom theme creation and import
+  - Windows 11 dark mode integration
+  - Theme persistence across sessions
+
+### 🏗️ Architecture
+- **Modular Design**
+  - Component-based architecture
+  - Plugin system for extensions
+  - Clean separation of concerns
+  - Event-driven patterns
+
+### ⚙️ Core Features
+- **Configuration Management**
+  - Multi-tier configuration system
+  - User settings persistence
+  - Module enablement control
+  - Runtime configuration updates
+
+- **Error Handling & Logging**
+  - Comprehensive exception management
+  - Rotating log files
+  - Detailed debug logging
+  - User-friendly error dialogs
+
+- **Database Integration**
+  - SQLite database with ORM
+  - Automated schema management
+  - Transaction support
+  - Data validation
+
+### 🖥️ UI Components
+- **Modern Menu System**
   - Icon-based menu items
   - Keyboard shortcuts
   - Status tips
-- 📊 Status bar for user feedback
-- 🎯 Resource management for icons and assets
+  - Customizable layout
 
-## 📁 Project Structure
-
-```
-PyQt6ify-Pro/
-├── config/                 # Configuration module
-│   ├── app_config.py      # Configuration management
-│   └── config.ini         # Application settings
-├── database/              # Database storage
-│   └── my_pyqt_app.db    # SQLite database file
-├── modules/               # Core modules
-│   ├── about.py          # About dialog
-│   ├── database.py       # Database operations
-│   ├── error_handling.py # Error management
-│   ├── menu.py          # Menu system
-│   ├── theme/           # Theme management
-│   │   ├── theme_dialog.py    # Theme settings dialog
-│   │   └── theme_manager.py   # Theme engine
-│   ├── status_bar.py    # Status bar
-│   └── toolbar.py       # Toolbar functionality
-├── resources/            # Application resources
-│   └── icons/           # Application icons
-├── logs/                 # Application logs
-├── docs/                 # Documentation
-├── tests/               # Test suite
-├── main.py              # Application entry point
-├── requirements.txt     # Python dependencies
-└── LICENSE.md          # License information
-```
+- **Toolbar & Status Bar**
+  - Configurable toolbar actions
+  - Live status updates
+  - Progress indicators
+  - System notifications
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
 - Python 3.8+
-- Git (for cloning the repository)
+- Git
+- pip
 
-### Installation
+### One-Line Installation
+```bash
+pip install git+https://github.com/elirancv/PyQt6ify-Pro.git
+```
 
+### Manual Installation
 1. Clone the repository:
-```bash
-git clone https://github.com/elirancv/PyQt6ify-Pro.git
-cd PyQt6ify-Pro
-```
+   ```bash
+   git clone https://github.com/elirancv/PyQt6ify-Pro.git
+   cd PyQt6ify-Pro
+   ```
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # Unix/MacOS
+   source venv/bin/activate
+   ```
 
-3. Run the application:
-```bash
-python main.py
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Run the application:
+   ```bash
+   python main.py
+   ```
+
+## 🏗️ Project Structure
+```
+PyQt6ify-Pro/
+├── modules/               # Core application modules
+│   ├── about/            # About dialog
+│   ├── config/           # Configuration system
+│   ├── core/             # Core application logic
+│   ├── dashboard/        # Main UI dashboard
+│   ├── database/         # Database operations
+│   ├── error_handling/   # Error management
+│   ├── menu/             # Menu system
+│   ├── resources/        # Resource management
+│   ├── status_bar/       # Status bar
+│   ├── themes/           # Theme engine
+│   └── toolbar/          # Toolbar system
+├── database/             # SQLite database
+├── docs/                 # Documentation
+├── extensions/           # Extension modules
+├── logs/                 # Application logs
+├── resources/            # Application resources
+│   └── icons/           # UI icons
+├── tests/                # Test suite
+│   ├── about/           # About module tests
+│   ├── config/          # Configuration tests
+│   ├── core/            # Core module tests
+│   └── ...              # Other module tests
+├── main.py              # Application entry
+├── requirements.txt     # Dependencies
+└── LICENSE.md           # License
 ```
 
 ## ⚙️ Configuration
 
-The application uses a two-tier configuration system:
-
-### 1. Runtime Configuration (app_config.py)
-- Application metadata
-- Module enablement
-- Resource paths
-- Default settings
-
-### 2. User Configuration (config.ini)
-```ini
-[APP]
-start_maximized = True
-screen_width = 1024
-screen_height = 768
-```
-
-## 💾 Database
-
-The application uses SQLite for data storage:
-- Automatic database initialization
-- Connection management
-- Built-in error handling
-- Located in `database/my_pyqt_app.db`
-
-## 🔍 Features in Detail
-
-### Error Handling
+### System Configuration
+Located in `modules/config/system_config.py`:
 ```python
-from modules.error_handling import show_error_dialog
-
-try:
-    # Your code here
-except Exception as e:
-    show_error_dialog("Error Title", str(e))
-```
-
-### Logging
-```python
-from loguru import logger
-
-logger.info("Information message")
-logger.error("Error message")
-```
-
-### Configuration Usage
-```python
-from config.app_config import Config
-
-config = Config()
-window_title = config.get_about_info('name')
-is_maximized = config.get_app_setting('start_maximized')
-```
-
-## 🛠️ Development
-
-### Adding New Features
-
-1. Create a new module in the `modules` directory:
-```python
-# modules/my_feature.py
-class MyFeature:
-    def __init__(self):
-        self.name = "My New Feature"
-```
-
-2. Enable the module in `config/app_config.py`:
-```python
-self.modules = {
-    'my_feature': True,
-    # other modules...
+{
+    'Application': {
+        'Name': 'PyQt6ify Pro Lite',
+        'Version': '1.0.0.0',
+        'Debug': 'False'
+    },
+    'Modules': {
+        'logging': 'True',
+        'database': 'True',
+        'menu': 'True',
+        'toolbar': 'True',
+        'status_bar': 'True'
+    }
 }
 ```
 
-3. Import and use in `main.py`:
-```python
-from modules import my_feature
+### User Settings
+Stored in `config/user_settings.ini`:
+```ini
+[Window]
+theme = dark
+start_maximized = true
+screen_width = 1024
+screen_height = 768
+
+[Features]
+auto_save = true
 ```
 
-### Best Practices
+## 🧪 Testing
 
-1. **Error Handling**
-   - Use the built-in error handling system
-   - Provide user-friendly error messages
-   - Log all errors appropriately
+Run the test suite:
+```bash
+# Run all tests with coverage
+python -m pytest tests/ --cov=modules
 
-2. **Configuration**
-   - Store user settings in config.ini
-   - Keep defaults in app_config.py
-   - Validate all configuration values
+# Run specific module tests
+pytest tests/config/
+pytest tests/themes/
+```
 
-3. **Database**
-   - Use context managers for connections
-   - Handle connection errors gracefully
-   - Keep database operations atomic
+## 🎨 Theme System
+
+### Built-in Themes
+- Light Theme (Default)
+- Dark Theme
+- System Theme (Windows 11)
+
+### Custom Themes
+Create custom themes using JSON:
+```json
+{
+  "theme_name": {
+    "window": {
+      "background": "#FFFFFF",
+      "foreground": "#000000"
+    },
+    "accent": "#0078D4"
+  }
+}
+```
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+- API Reference
+- Component Guide
+- Theme Customization
+- Extension Development
 
 ## 🤝 Contributing
 
+Please read our [Contributing Guidelines](CONTRIBUTING.md) before making a pull request.
+
+<details>
+<summary>Click to expand contribution workflow</summary>
+
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. Commit your changes
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. Push to the branch
+   ```bash
+   git push origin feature/amazing-feature
+   ```
 5. Open a Pull Request
 
-## 📋 Version History
-
-### v1.0.0 b002 (2024-12-09)
-- 🎨 Enhanced Theme System
-  - Added status bar feedback for theme changes
-  - Improved theme switching stability
-  - Added detailed logging to theme operations
-  - Centralized logging to app.log
-- 🛠️ Menu System Improvements
-  - Added icons to all menu items
-  - Reorganized menu order (File, Edit, View, Help)
-  - Added status tips for menu actions
-- 📁 Project Structure
-  - Consolidated icon resources under resources/icons
-  - Improved theme module organization
-  - Updated documentation
-
-### v1.0.0 b001 (2024-09-04)
-- 🚀 Initial beta release
-- 🎨 Basic theme support (Light/Dark)
-- 📝 Configuration management
-- 🔒 Error handling and logging
-- 💾 SQLite database integration
-- 🛠️ Basic menu and toolbar system
+</details>
 
 ## 📄 License
 
-This project is licensed under the terms of the LICENSE.md file.
+This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.
 
 ## 🙏 Acknowledgments
 
-- PyQt6 team for the excellent GUI framework
-- Contributors and users of the project
+- [PyQt6](https://www.riverbankcomputing.com/software/pyqt/) - The Qt framework for Python
+- [Riverbank Computing](https://www.riverbankcomputing.com/) - Developers of PyQt
 
-## 📫 Contact
+## 📫 Support & Links
 
-Eliran - [@elirancv](https://github.com/elirancv)
+<div align="center">
 
-Project Link: [https://github.com/elirancv/PyQt6ify-Pro](https://github.com/elirancv/PyQt6ify-Pro)
+[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/pulls)
+[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/stargazers)
+[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/blob/main/LICENSE.md)
+
+</div>
+
+- 📘 [Documentation](https://github.com/elirancv/PyQt6ify-Pro/wiki)
+- 🐛 [Issue Tracker](https://github.com/elirancv/PyQt6ify-Pro/issues)
+- 💡 [Feature Requests](https://github.com/elirancv/PyQt6ify-Pro/issues/new?labels=enhancement)
+- 📋 [Project Board](https://github.com/elirancv/PyQt6ify-Pro/projects)
