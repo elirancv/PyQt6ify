@@ -44,31 +44,51 @@ def show_about_dialog(config, parent=None):
 
         # Set text color based on the theme
         text_color = palette.color(QPalette.ColorRole.WindowText)
+        bg_color = palette.color(QPalette.ColorRole.Window)
+        accent_color = QColor(77, 166, 255) if text_color.lightness() > 128 else QColor(102, 187, 255)
         dim_text_color = QColor(text_color.red(), text_color.green(), text_color.blue(), 180)
-        link_color = QColor(77, 166, 255)  # Bright blue that works well in dark mode
         
         # Create text with explicit styling
         about_text = f"""
-        <div style='color: {text_color.name()}; text-align: center;'>
-            <p style='font-size: 16px; font-weight: bold; margin: 0 0 8px 0;'>{app_name}</p>
-            <p style='margin: 4px 0;'><span style='color: {dim_text_color.name()};'>Version:</span> {version}</p>
-            <p style='margin: 4px 0;'><span style='color: {dim_text_color.name()};'>Author:</span> {author}</p>
-            <p style='margin: 8px 0;'>{description}</p>
-            <p style='margin: 8px 0;'><a href='{website}' style='color: {link_color.name()};'>Visit Website</a></p>
+        <div style='color: {text_color.name()}; text-align: center; padding: 20px;'>
+            <div style='margin-bottom: 24px;'>
+                <h1 style='font-size: 24px; font-weight: bold; margin: 0 0 4px 0; color: {accent_color.name()};'>{app_name}</h1>
+                <p style='font-size: 14px; margin: 4px 0; color: {dim_text_color.name()};'>Version {version}</p>
+            </div>
+            
+            <div style='margin: 16px 0; line-height: 1.5;'>
+                <p style='margin: 8px 0;'>{description}</p>
+                <p style='margin: 12px 0; color: {dim_text_color.name()};'>Created by {author}</p>
+            </div>
+            
+            <div style='margin-top: 20px;'>
+                <a href='{website}' style='color: {accent_color.name()}; text-decoration: none; font-weight: bold;'>Visit Website</a>
+            </div>
         </div>
         """
         
         # Set text and make it selectable
         about.setText(about_text)
         about.setTextFormat(Qt.TextFormat.RichText)
-        about.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
+        about.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction | Qt.TextInteractionFlag.LinksAccessibleByMouse)
+        
+        # Set minimum size for better layout
+        about.setMinimumWidth(400)
+        
+        # Style the OK button to match theme
+        ok_button = about.button(QMessageBox.StandardButton.Ok)
+        if ok_button:
+            ok_button.setMinimumWidth(100)
+            
+        # Add some padding around the content
+        about.layout().setContentsMargins(20, 20, 20, 20)
         
         # Set standard buttons and default button
         about.setStandardButtons(QMessageBox.StandardButton.Ok)
         about.setDefaultButton(QMessageBox.StandardButton.Ok)
         
-        # Show the dialog
-        about.show()
+        # Show the dialog modally
+        about.exec()
         return about
         
     except Exception as e:

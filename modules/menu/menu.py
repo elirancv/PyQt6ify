@@ -136,7 +136,7 @@ class MenuBar(QMenuBar):
         # About
         about_action = QAction(self.get_icon('about.png'), '&About', self)
         about_action.setStatusTip('About PyQt6ify Pro')
-        about_action.triggered.connect(lambda: show_about_dialog(self.parent, self.parent.config))
+        about_action.triggered.connect(lambda: show_about_dialog(self.parent.config))
         help_menu.addAction(about_action)
         
         # Documentation
