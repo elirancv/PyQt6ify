@@ -100,7 +100,6 @@ class Config:
             logger.error(f"Error saving configuration: {str(e)}")
             raise ConfigError(f"Failed to save configuration: {str(e)}") from e
 
-
     def _current_state(self) -> Dict[str, Dict[str, Any]]:
         """Get the current state of the configuration for comparison."""
         state = {}
@@ -109,16 +108,7 @@ class Config:
         return state
 
     def get(self, section: str, option: str, fallback: Any = None) -> Any:
-        """Get a value from the configuration.
-
-        Args:
-            section (str): The section name.
-            option (str): The option name.
-            fallback (Any): Default value if the option is missing.
-
-        Returns:
-            Any: The value from the configuration or the fallback.
-        """
+        """Get a value from the configuration."""
         try:
             return self.config.get(section, option, fallback=fallback)
         except configparser.Error as e:

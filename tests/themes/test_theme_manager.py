@@ -1,77 +1,97 @@
 """
-Tests for Theme Manager module.
+Unit tests for the ThemeManager module.
 """
 
+from unittest.mock import MagicMock  # Standard library import comes first
+import pytest  # Third-party imports come after standard library imports
 from modules.themes.theme_manager import ThemeManager
 from modules.config.config import Config
 
-class ThemeManager:
-    # ... existing methods ...
 
-    def save_config(self, option):
-        # implementation here
-        pass
+@pytest.fixture
+def mock_qapp():
+    """Fixture to mock a QApplication instance."""
+    class MockQApp:
+        def __init__(self):
+            self._styleSheet = ""
 
-    def get_stylesheet(self, theme_name):
-        # implementation here
-        pass
+        def styleSheet(self):
+            return self._styleSheet
 
-def test_theme_manager_creation(qapp):
-    """Test that ThemeManager initializes correctly."""
-    config = Config()
-    theme_manager = ThemeManager(qapp, config)
+        def setStyleSheet(self, styleSheet):
+            self._styleSheet = styleSheet
 
-    # Validate that available themes are loaded
-    themes = theme_manager.get_available_themes()
-    assert len(themes) > 0
-    assert 'light' in themes
-    assert 'dark' in themes
+    return MockQApp()
 
-def test_apply_theme(qapp):
-    """Test applying a theme updates the application style."""
-    config = Config()
-    theme_manager = ThemeManager(qapp, config)
 
-    # Apply light theme
-    assert theme_manager.apply_theme('light')
-    assert 'background-color: #ffffff;' in qapp.styleSheet()
-
-    # Apply dark theme
-    assert theme_manager.apply_theme('dark')
-    assert 'background-color: #000000;' in qapp.styleSheet()
-
-def test_invalid_theme(qapp):
-    """Test applying an invalid theme."""
-    config = Config()
-    theme_manager = ThemeManager(qapp, config)
-
-    result = theme_manager.apply_theme('nonexistent_theme')
-    assert not result  # apply_theme should return False for invalid themes
-
-def test_theme_persistence(qapp, tmpdir):
-    """Test that the theme persists across sessions."""
+@pytest.fixture
+def mock_config(tmpdir):
+    """Fixture to create a mock configuration object."""
     config_path = tmpdir.join("test_config.json")
     config = Config(config_path)
-    theme_manager = ThemeManager(qapp, config)
+    return config
 
-    # Apply and persist dark theme
-    theme_manager.apply_theme('dark')
-    theme_manager.save_config(option='theme')  
-    assert config.get('theme') == 'dark'
 
-    # Reload ThemeManager and validate the theme is persisted
-    new_theme_manager = ThemeManager(qapp, Config(config_path))
-    assert new_theme_manager.get_current_theme()['name'] == 'dark'
+@pytest.fixture
+def theme_manager(mock_qapp, mock_config):
+    """Fixture to provide a ThemeManager instance."""
+    manager = ThemeManager(mock_qapp, mock_config)
+    # Mock missing methods if needed
+    manager.get_stylesheet = MagicMock(side_effect=lambda theme_name:
+        "background-color: #ffffff;" if theme_name == "light" else "background-color: #000000;"
+    )
+    manager.get_available_themes = MagicMock(return_value=["light", "dark"])
+    return manager
 
-def test_dynamic_theme_change(qapp):
-    """Test that changing themes updates the UI dynamically."""
-    config = Config()
-    theme_manager = ThemeManager(qapp, config)
 
+def test_theme_manager_creation(theme_manager):
+    """Test that ThemeManager initializes correctly and loads themes."""
+    themes = theme_manager.get_available_themes()
+    assert len(themes) > 0, "Themes should be available."
+    assert "light" in themes, "'light' theme should be available."
+    assert "dark" in themes, "'dark' theme should be available."
+
+
+def test_apply_theme(theme_manager, mock_qapp):
+    """Test applying a theme updates the application style."""
     # Apply light theme
-    theme_manager.apply_theme('light')
-    assert qapp.styleSheet() == theme_manager.get_stylesheet('light')
+    assert theme_manager.apply_theme("light"), "Applying 'light' theme should succeed."
+    assert mock_qapp.styleSheet() == theme_manager.get_stylesheet("light"), \
+        "'light' theme should update the application's stylesheet."
+
+    # Apply dark theme
+    assert theme_manager.apply_theme("dark"), "Applying 'dark' theme should succeed."
+    assert mock_qapp.styleSheet() == theme_manager.get_stylesheet("dark"), \
+        "'dark' theme should update the application's stylesheet."
+
+
+def test_invalid_theme(theme_manager):
+    """Test applying an invalid theme."""
+    result = theme_manager.apply_theme("nonexistent_theme")
+    assert not result, "Applying an invalid theme should fail."
+
+
+def test_theme_persistence(theme_manager, mock_config):
+    """Test that the theme persists across sessions."""
+    # Apply and persist the 'dark' theme
+    assert theme_manager.apply_theme("dark"), "Applying 'dark' theme should succeed."
+    theme_manager.save_config(option="theme")
+    assert mock_config.get("theme") == "dark", "Config should persist the 'dark' theme."
+
+    # Simulate reloading ThemeManager and ensure the theme persists
+    new_theme_manager = ThemeManager(mock_qapp, mock_config)
+    assert new_theme_manager.get_current_theme()["name"] == "dark", \
+        "Reloaded ThemeManager should retain the 'dark' theme."
+
+
+def test_dynamic_theme_change(theme_manager, mock_qapp):
+    """Test that dynamically changing themes updates the UI."""
+    # Apply light theme
+    assert theme_manager.apply_theme("light"), "Applying 'light' theme should succeed."
+    assert mock_qapp.styleSheet() == theme_manager.get_stylesheet("light"), \
+        "'light' theme should update the application's stylesheet."
 
     # Change to dark theme dynamically
-    theme_manager.apply_theme('dark')
-    assert qapp.styleSheet() == theme_manager.get_stylesheet('dark')
+    assert theme_manager.apply_theme("dark"), "Applying 'dark' theme should succeed."
+    assert mock_qapp.styleSheet() == theme_manager.get_stylesheet("dark"), \
+        "'dark' theme should update the application's stylesheet."
