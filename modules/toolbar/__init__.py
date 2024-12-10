@@ -1,7 +1,6 @@
 """
-Toolbar module for PyQt6ify Pro.
+Toolbar module initialization.
 """
-
-from .toolbar import ToolBar
+from modules.toolbar.toolbar import ToolBar
 
 __all__ = ['ToolBar']

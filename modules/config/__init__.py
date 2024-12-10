@@ -1,8 +1,9 @@
 """
-Configuration module for PyQt6ify Pro.
+Configuration module.
 Handles application configuration and settings management.
 """
 
-from .config import Config, ConfigError
+
+from modules.config.config import Config, ConfigError
 
 __all__ = ['Config', 'ConfigError']

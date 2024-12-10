@@ -1,7 +1,6 @@
 """
-Menu module for PyQt6ify Pro.
+Menu module initialization.
 """
-
-from .menu import MenuBar
+from modules.menu.menu import MenuBar
 
 __all__ = ['MenuBar']

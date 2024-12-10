@@ -1,7 +1,6 @@
 """
-Resources module for PyQt6ify Pro.
+Resources module initialization.
 """
-
-from .resources import create_resources
+from modules.resources.resources import create_resources
 
 __all__ = ['create_resources']

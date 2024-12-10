@@ -16,3 +16,4 @@ pytest-timeout==2.3.1  # Latest stable version
 black==24.10.0  # Latest stable version
 flake8==7.1.1  # Latest stable version
 mypy==1.13.0  # Latest stable version
+pylint==3.3.2  # Latest stable version

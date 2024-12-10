@@ -1,27 +1,28 @@
 """
-Configuration module for PyQt6ify Pro.
+Configuration management module.
 """
-
-import os
 import configparser
+import os
+from typing import Any, Dict
+
 from loguru import logger
 
 class ConfigError(Exception):
     """Custom exception for configuration related errors."""
-    pass
 
 class Config:
     """Configuration class for PyQt6ify Pro."""
-    
-    def __init__(self, config_file=None):
-        """Initialize the configuration."""
-        # If no config file specified, use default location
-        if config_file is None:
-            config_file = os.path.join(os.path.dirname(__file__), 'config.ini')
-            
+
+    def __init__(self, config_file: str = "tests/config/config.ini"):
+        """Initialize the configuration.
+
+        Args:
+            config_file (str): Path to the configuration file.
+        """
         self.config_file = config_file
         self.config = configparser.ConfigParser()
-        
+        self._initializing = True  # Add flag to track initialization
+
         # Default settings
         self.default_config = {
             'Application': {
@@ -49,19 +50,20 @@ class Config:
                 'theme': 'light'
             }
         }
-        
-        self.load_config()
-        
-    def load_config(self):
-        """Load the configuration from file."""
+
+        self.load()
+        self._initializing = False  # Reset flag after initialization
+
+    def load(self) -> None:
+        """Load configuration from file."""
         try:
             if not os.path.exists(self.config_file):
                 logger.error(f"Configuration file not found: {self.config_file}")
                 raise ConfigError(f"Configuration file not found: {self.config_file}")
-            
-            self.config.read(self.config_file)
+
+            self.config.read(self.config_file, encoding='utf-8')
             logger.info("Configuration loaded successfully")
-            
+
             # Ensure all required sections and options exist
             for section, options in self.default_config.items():
                 if not self.config.has_section(section):
@@ -69,136 +71,245 @@ class Config:
                 for option, value in options.items():
                     if not self.config.has_option(section, option):
                         self.config.set(section, option, value)
-            
+
         except ConfigError:
             raise
         except Exception as e:
             logger.error(f"Error loading configuration: {str(e)}")
-            raise ConfigError(f"Failed to load configuration: {str(e)}")
-    
-    def save_config(self):
-        """Save the configuration to file."""
+            raise ConfigError(f"Failed to load configuration: {str(e)}") from e
+
+    def save(self) -> None:
+        """Save configuration to file."""
         try:
-            with open(self.config_file, 'w') as f:
+            # Skip saving during initialization
+            if self._initializing:
+                return
+
+            with open(self.config_file, 'w', encoding='utf-8') as f:
                 self.config.write(f)
             logger.info("Configuration saved successfully")
         except Exception as e:
             logger.error(f"Error saving configuration: {str(e)}")
-            raise ConfigError(f"Failed to save configuration: {str(e)}")
-            
-    def get(self, section, option, fallback=None):
-        """Get a configuration value with fallback."""
+            raise ConfigError(f"Failed to save configuration: {str(e)}") from e
+
+    def get(self, section: str, option: str, fallback: Any = None) -> Any:
+        """Get a value from the configuration.
+
+        Args:
+            section (str): Section name.
+            option (str): Option name.
+            fallback (Any): Default value if section or option not found.
+
+        Returns:
+            Any: Configuration value.
+        """
         try:
             if not self.config.has_section(section):
                 return fallback
             return self.config.get(section, option, fallback=fallback)
-        except Exception as e:
-            logger.error(f"Error getting config value [{section}][{option}]: {str(e)}")
+        except configparser.Error as e:
+            logger.error(f"Error getting config value: {str(e)}")
             return fallback
 
-    def getboolean(self, section, option):
-        """Get a boolean configuration value."""
+    def get_modules_enabled(self) -> Dict[str, bool]:
+        """Get enabled/disabled status of modules.
+
+        Returns:
+            Dict[str, bool]: Dictionary of module names and their enabled status.
+        """
         try:
-            if not self.config.has_section(section):
-                raise ConfigError(f"Section not found: {section}")
-            if not self.config.has_option(section, option):
-                raise ConfigError(f"Option not found: {option} in section {section}")
+            modules = self.config.items('Modules')
+            return {name: self.getboolean('Modules', name) for name, _ in modules}
+        except (configparser.Error, ValueError) as e:
+            logger.error(f"Error getting modules enabled: {str(e)}")
+            raise ConfigError(f"Error getting modules enabled: {str(e)}") from e
+
+    def set_modules_enabled(self, modules: Dict[str, bool]) -> None:
+        """Set enabled/disabled status of modules.
+
+        Args:
+            modules (Dict[str, bool]): Dictionary of module names and their enabled status.
+        """
+        try:
+            if not self.config.has_section('Modules'):
+                self.config.add_section('Modules')
+            for name, enabled in modules.items():
+                self.config.set('Modules', name, str(enabled))
+            self.save()
+        except configparser.Error as e:
+            logger.error(f"Error setting modules enabled: {str(e)}")
+            raise ConfigError(f"Error setting modules enabled: {str(e)}") from e
+
+    def get_about_info(self) -> Dict[str, str]:
+        """Get about information.
+
+        Returns:
+            Dict[str, str]: Dictionary containing about information.
+        """
+        try:
+            about = dict(self.config.items('About'))
+            return about
+        except configparser.Error as e:
+            logger.error(f"Error getting about info: {str(e)}")
+            raise ConfigError(f"Error getting about info: {str(e)}") from e
+
+    def get_app_info(self) -> Dict[str, str]:
+        """Get application information.
+
+        Returns:
+            Dict[str, str]: Dictionary containing application information.
+        """
+        try:
+            app_info = dict(self.config.items('Application'))
+            return app_info
+        except configparser.Error as e:
+            logger.error(f"Error getting app info: {str(e)}")
+            raise ConfigError(f"Error getting app info: {str(e)}") from e
+
+    def get_window_settings(self) -> Dict[str, Any]:
+        """Get window settings.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing window settings.
+        """
+        try:
+            settings = dict(self.config.items('Window'))
+            return settings
+        except configparser.Error as e:
+            logger.error(f"Error getting window settings: {str(e)}")
+            raise ConfigError(f"Error getting window settings: {str(e)}") from e
+
+    def set_window_settings(self, settings: Dict[str, Any]) -> None:
+        """Set window settings.
+
+        Args:
+            settings (Dict[str, Any]): Dictionary containing window settings.
+        """
+        try:
+            if not self.config.has_section('Window'):
+                self.config.add_section('Window')
+            for key, value in settings.items():
+                self.config.set('Window', key, str(value))
+            self.save()
+        except configparser.Error as e:
+            logger.error(f"Error setting window settings: {str(e)}")
+            raise ConfigError(f"Error setting window settings: {str(e)}") from e
+
+    def getboolean(self, section: str, option: str) -> bool:
+        """Get a boolean value from the configuration.
+
+        Args:
+            section (str): Section name.
+            option (str): Option name.
+
+        Returns:
+            bool: Boolean value.
+
+        Raises:
+            ConfigError: If the section or option doesn't exist or value is invalid.
+        """
+        try:
             return self.config.getboolean(section, option)
-        except Exception as e:
-            logger.error(f"Error getting boolean config value [{section}][{option}]: {str(e)}")
-            raise ConfigError(f"Failed to get boolean value: {str(e)}")
+        except configparser.NoSectionError as e:
+            logger.error(f"Section not found: {section}")
+            raise ConfigError(f"Section not found: {section}") from e
+        except configparser.NoOptionError as e:
+            logger.error(f"Option not found: {option} in section {section}")
+            raise ConfigError(f"Option not found: {option} in section {section}") from e
+        except ValueError as e:
+            logger.error(f"Invalid boolean value in {section}.{option}: {str(e)}")
+            raise ConfigError(f"Invalid boolean value in {section}.{option}: {str(e)}") from e
 
-    def getint(self, section, option):
-        """Get an integer configuration value."""
+    def getint(self, section: str, option: str) -> int:
+        """Get an integer value from the configuration.
+
+        Args:
+            section (str): Section name.
+            option (str): Option name.
+
+        Returns:
+            int: Integer value.
+
+        Raises:
+            ConfigError: If the section or option doesn't exist or value is invalid.
+        """
         try:
-            if not self.config.has_section(section):
-                raise ConfigError(f"Section not found: {section}")
-            if not self.config.has_option(section, option):
-                raise ConfigError(f"Option not found: {option} in section {section}")
-            try:
-                return self.config.getint(section, option)
-            except ValueError as e:
-                raise ConfigError(f"Failed to get integer value: {str(e)}")
-        except ConfigError as e:
-            logger.error(f"Error getting integer config value [{section}][{option}]: {str(e)}")
-            raise
+            return self.config.getint(section, option)
+        except configparser.NoSectionError as e:
+            logger.error(f"Section not found: {section}")
+            raise ConfigError(f"Section not found: {section}") from e
+        except configparser.NoOptionError as e:
+            logger.error(f"Option not found: {option} in section {section}")
+            raise ConfigError(f"Option not found: {option} in section {section}") from e
+        except ValueError as e:
+            logger.error(f"Invalid integer value in {section}.{option}: {str(e)}")
+            raise ConfigError(f"Invalid integer value in {section}.{option}: {str(e)}") from e
 
-    def set(self, section, option, value):
-        """Set a configuration value."""
+    def set(self, section: str, option: str, value: Any) -> None:
+        """Set a value in the configuration.
+
+        Args:
+            section (str): Section name.
+            option (str): Option name.
+            value (Any): Value to set.
+
+        Raises:
+            ConfigError: If the section doesn't exist.
+        """
         try:
             if not self.config.has_section(section):
                 raise ConfigError(f"Section not found: {section}")
             self.config.set(section, option, str(value))
-        except Exception as e:
-            logger.error(f"Error setting config value [{section}][{option}]: {str(e)}")
-            raise ConfigError(f"Failed to set configuration value: {str(e)}")
+            self.save()
+        except configparser.Error as e:
+            logger.error(f"Error setting value: {str(e)}")
+            raise ConfigError(f"Error setting value: {str(e)}") from e
 
     @property
-    def modules_enabled(self):
-        """Get enabled modules configuration."""
+    def modules_enabled(self) -> Dict[str, bool]:
+        """Get enabled/disabled status of modules."""
         try:
-            return {
-                'logging': self.getboolean('Modules', 'logging'),
-                'database': self.getboolean('Modules', 'database'),
-                'menu': self.getboolean('Modules', 'menu'),
-                'toolbar': self.getboolean('Modules', 'toolbar'),
-                'status_bar': self.getboolean('Modules', 'status_bar')
-            }
+            return self.get_modules_enabled()
         except Exception as e:
             logger.error(f"Error getting modules configuration: {str(e)}")
             return {}
 
     @property
-    def about_info(self):
+    def about_info(self) -> Dict[str, str]:
         """Get about dialog information."""
         try:
-            return {
-                'name': self.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
-                'version': self.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
-                'author': self.get('About', 'Author', fallback=self.default_config['About']['Author']),
-                'description': self.get('About', 'Description', fallback=self.default_config['About']['Description']),
-                'website': self.get('About', 'Website', fallback=self.default_config['About']['Website']),
-                'icon': self.get('About', 'Icon', fallback=self.default_config['About']['Icon'])
-            }
+            return self.get_about_info()
         except Exception as e:
             logger.error(f"Error getting about info: {str(e)}")
             return {}
-            
+
     @property
-    def app_info(self):
+    def app_info(self) -> Dict[str, str]:
         """Get application information."""
         try:
-            return {
-                'name': self.get('Application', 'Name', fallback=self.default_config['Application']['Name']),
-                'version': self.get('Application', 'Version', fallback=self.default_config['Application']['Version']),
-                'debug': self.getboolean('Application', 'Debug')
-            }
+            return self.get_app_info()
         except Exception as e:
             logger.error(f"Error getting application info: {str(e)}")
             return {}
-            
+
     @property
-    def application_settings(self):
+    def application_settings(self) -> Dict[str, Any]:
         """Get application settings."""
         try:
             return {
-                'name': self.get('Application', 'name'),
-                'debug': self.get('Application', 'debug')
+                'name': self.get('Application', 'Name'),
+                'version': self.get('Application', 'Version'),
+                'debug': self.get('Application', 'Debug')
             }
         except Exception as e:
             logger.error(f"Error getting application settings: {str(e)}")
             return {}
 
     @property
-    def window_settings(self):
+    def window_settings(self) -> Dict[str, Any]:
         """Get window settings."""
         try:
-            return {
-                'start_maximized': self.getboolean('Window', 'start_maximized'),
-                'screen_width': self.getint('Window', 'screen_width'),
-                'screen_height': self.getint('Window', 'screen_height'),
-                'theme': self.get('Window', 'theme')
-            }
+            return self.get_window_settings()
         except Exception as e:
             logger.error(f"Error getting window settings: {str(e)}")
             return {}
@@ -207,27 +318,16 @@ class Config:
     def window_settings(self, settings):
         """Set window settings."""
         try:
-            if not self.config.has_section('Window'):
-                self.config.add_section('Window')
-                
-            for key, value in settings.items():
-                self.config.set('Window', key, str(value))
-                
-            self.save_config()
+            self.set_window_settings(settings)
         except Exception as e:
             logger.error(f"Error setting window settings: {str(e)}")
-            raise ConfigError(f"Failed to set window settings: {str(e)}")
+            raise ConfigError(f"Failed to set window settings: {str(e)}") from e
 
     @property
-    def about_settings(self):
+    def about_settings(self) -> Dict[str, str]:
         """Get about settings."""
         try:
-            return {
-                'author': self.get('About', 'Author'),
-                'description': self.get('About', 'Description'),
-                'website': self.get('About', 'Website'),
-                'icon': self.get('About', 'Icon')
-            }
+            return self.get_about_info()
         except Exception as e:
             logger.error(f"Error getting about settings: {str(e)}")
             return {}

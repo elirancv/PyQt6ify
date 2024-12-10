@@ -5,15 +5,16 @@ Handles theme loading, switching, and persistence.
 
 import os
 import json
-from loguru import logger
+import ctypes
+from typing import Dict
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QPalette, QColor
-from PyQt6.QtCore import Qt
+from loguru import logger
 from modules.config.config import Config
 
 class ThemeManager:
     """Manages application themes."""
-    
+
     def __init__(self, app: QApplication, config: Config):
         """Initialize the theme manager.
 
@@ -26,16 +27,15 @@ class ThemeManager:
         self.themes = {}
         self.current_theme = None
         self.default_theme = "dark"
-        
+
         # Initialize Windows DWM API constants
         try:
-            import ctypes
             self.dwmapi = ctypes.windll.dwmapi
             self.DWMWA_USE_IMMERSIVE_DARK_MODE = 20
         except Exception:
             self.dwmapi = None
             logger.warning("Windows DWM API not available")
-        
+
         # Load themes from JSON file
         self.themes_file = os.path.join(os.path.dirname(__file__), 'themes.json')
         self.load_themes()
@@ -45,32 +45,32 @@ class ThemeManager:
         self.app.setStyle('Fusion')
 
         # Apply theme from config or default
-        theme_name = self.config.get('Window', 'theme', self.default_theme)
+        theme_name = self.config.get('window', 'theme', self.default_theme)
         self.apply_theme(theme_name)
-        
+
         logger.info("Theme manager initialized")
         logger.debug(f"Themes file: {self.themes_file}")
 
-    def load_themes(self):
+    def load_themes(self) -> None:
         """Load themes from the themes.json file."""
         # Initialize default themes
         self.themes = {
             "light": self._get_default_light_theme(),
             "dark": self._get_default_dark_theme()
         }
-        
+
         # Load custom themes from file
         if os.path.exists(self.themes_file):
             try:
-                with open(self.themes_file, 'r') as f:
+                with open(self.themes_file, encoding='utf-8') as f:
                     custom_themes = json.load(f)
                     self.themes.update(custom_themes)
-            except Exception as e:
+            except json.JSONDecodeError as e:
                 logger.error(f"Error loading themes: {str(e)}")
         else:
             logger.warning(f"Themes file not found: {self.themes_file}")
-    
-    def _get_default_light_theme(self):
+
+    def _get_default_light_theme(self) -> Dict[str, str]:
         """Get the default light theme colors."""
         return {
             "name": "light",
@@ -92,8 +92,8 @@ class ThemeManager:
             "link": "#3498db",
             "linkVisited": "#9b59b6"
         }
-    
-    def _get_default_dark_theme(self):
+
+    def _get_default_dark_theme(self) -> Dict[str, str]:
         """Get the default dark theme colors."""
         return {
             "name": "dark",
@@ -115,46 +115,45 @@ class ThemeManager:
             "link": "#3498db",
             "linkVisited": "#9b59b6"
         }
-    
-    def _save_themes(self):
+
+    def _save_themes(self) -> bool:
         """Save themes to the themes directory."""
         try:
             # Only save custom themes, not default ones
             custom_themes = {name: theme for name, theme in self.themes.items()
                            if name not in ["light", "dark"]}
-            
-            with open(self.themes_file, 'w') as f:
+
+            with open(self.themes_file, 'w', encoding='utf-8') as f:
                 json.dump(custom_themes, f, indent=4)
-                
+
             logger.info(f"Saved {len(custom_themes)} custom themes to {self.themes_file}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error saving themes: {str(e)}")
             return False
-    
-    def get_available_themes(self):
+
+    def get_available_themes(self) -> list[str]:
         """Get a list of available theme names."""
         return list(self.themes.keys())
-    
-    def get_current_theme(self):
+
+    def get_current_theme(self) -> Dict[str, str]:
         """Get the current theme."""
         if not self.current_theme or self.current_theme not in self.themes:
             return self.themes[self.default_theme]
         return self.themes[self.current_theme]
-    
-    def set_window_dark_mode(self, window, is_dark):
+
+    def set_window_dark_mode(self, window, is_dark: bool) -> None:
         """Set dark mode for a specific window.
-        
+
         Args:
             window: The window to set dark mode for
             is_dark (bool): Whether to enable dark mode
         """
         if not self.dwmapi:
             return
-            
+
         try:
-            import ctypes
             value = ctypes.c_int(is_dark)
             self.dwmapi.DwmSetWindowAttribute(
                 int(window.winId()),
@@ -165,16 +164,16 @@ class ThemeManager:
         except Exception as e:
             logger.warning(f"Could not set window dark mode: {str(e)}")
 
-    def apply_theme(self, theme_name):
+    def apply_theme(self, theme_name: str) -> bool:
         """Apply a theme to the application."""
         if theme_name not in self.themes:
             logger.error(f"Theme '{theme_name}' not found")
             return False
-        
+
         try:
             theme = self.themes[theme_name]
             palette = QPalette()
-            
+
             # Map theme colors to palette roles
             role_map = {
                 "window": QPalette.ColorRole.Window,
@@ -195,29 +194,29 @@ class ThemeManager:
                 "link": QPalette.ColorRole.Link,
                 "linkVisited": QPalette.ColorRole.LinkVisited
             }
-            
+
             # Apply colors to all color groups
             for theme_key, color_str in theme.items():
                 if theme_key in role_map:
                     try:
                         color = QColor(color_str)
-                        for group in [QPalette.ColorGroup.Active, 
-                                    QPalette.ColorGroup.Inactive, 
+                        for group in [QPalette.ColorGroup.Active,
+                                    QPalette.ColorGroup.Inactive,
                                     QPalette.ColorGroup.Disabled]:
                             palette.setColor(group, role_map[theme_key], color)
                     except Exception as e:
                         logger.error(f"Error setting color {theme_key}: {str(e)}")
                         return False
-            
+
             # Apply palette
             self.app.setPalette(palette)
-            
+
             # Update window dark mode based on window color brightness
             window_color = QColor(theme["window"])
             is_dark = window_color.lightness() < 128
             for window in self.app.topLevelWindows():
                 self.set_window_dark_mode(window, is_dark)
-            
+
             # Apply stylesheet
             stylesheet = f"""
                 QWidget {{
@@ -250,120 +249,121 @@ class ThemeManager:
                     color: {theme["windowText"]};
                 }}
             """
-            
+
             self.app.setStyleSheet(stylesheet)
             self.current_theme = theme_name
-            
+
             # Save to config immediately
-            self.config.set('Window', 'theme', theme_name)
-            self.config.save_config()
-            
+            self.config.set('window', 'theme', theme_name)
+            self.config.save()
+
             return True
-                
+
         except Exception as e:
             logger.error(f"Error applying theme {theme_name}: {str(e)}")
             return False
-    
-    def switch_theme(self, theme_name):
+
+    def switch_theme(self, theme_name: str) -> bool:
         """Switch to a different theme."""
         if theme_name in self.themes:
             success = self.apply_theme(theme_name)
             if success:
                 # Save to config
-                self.config.set('Window', 'theme', theme_name)
+                self.config.set('window', 'theme', theme_name)
+                self.config.save()
                 logger.info(f"Switched to theme: {theme_name}")
                 return True
-            
+
         logger.error(f"Failed to switch to theme: {theme_name}")
         return False
-    
-    def load_theme_from_file(self, file_path):
+
+    def load_theme_from_file(self, file_path: str) -> bool:
         """Load a theme from a JSON file."""
         try:
-            with open(file_path, 'r') as f:
-                theme = json.load(f)
-            
+            with open(file_path, encoding='utf-8') as f:
+                theme_data = json.load(f)
+
             # Validate theme
-            if not isinstance(theme, dict):
+            if not isinstance(theme_data, dict):
                 raise ValueError("Theme must be a dictionary")
-            
+
             # Add theme
             name = os.path.splitext(os.path.basename(file_path))[0]
-            self.themes[name] = theme
+            self.themes[name] = theme_data
             self._save_themes()
-            
+
             logger.info(f"Loaded theme from {file_path}")
             return True
-            
-        except Exception as e:
+
+        except json.JSONDecodeError as e:
             logger.error(f"Error loading theme from {file_path}: {str(e)}")
             return False
-    
-    def export_theme(self, theme_name, file_path):
+
+    def export_theme(self, theme_name: str, file_path: str) -> bool:
         """Export a theme to a JSON file."""
         if theme_name not in self.themes:
             logger.error(f"Theme '{theme_name}' not found")
             return False
-            
+
         try:
-            with open(file_path, 'w') as f:
+            with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(self.themes[theme_name], f, indent=4)
-                
+
             logger.info(f"Exported theme {theme_name} to {file_path}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error exporting theme {theme_name}: {str(e)}")
             return False
-    
-    def create_theme(self, name, colors):
+
+    def create_theme(self, name: str, colors: Dict[str, str]) -> bool:
         """Create a new theme."""
         if name in self.themes:
             logger.error(f"Theme '{name}' already exists")
             return False
-            
+
         try:
             # Validate colors
             for color in colors.values():
                 if not self._is_valid_color(color):
                     raise ValueError(f"Invalid color: {color}")
-            
+
             # Add theme
             self.themes[name] = colors
             self._save_themes()
-            
+
             logger.info(f"Created new theme: {name}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error creating theme {name}: {str(e)}")
             return False
-    
-    def delete_theme(self, name):
+
+    def delete_theme(self, name: str) -> bool:
         """Delete a theme."""
         if name not in self.themes:
             logger.error(f"Theme '{name}' not found")
             return False
-            
+
         if name in ["light", "dark"]:
             logger.error("Cannot delete default themes")
             return False
-            
+
         try:
             del self.themes[name]
             self._save_themes()
-            
+
             logger.info(f"Deleted theme: {name}")
             return True
-            
+
         except Exception as e:
             logger.error(f"Error deleting theme {name}: {str(e)}")
             return False
-    
-    def _is_valid_color(self, color_str):
+
+    def _is_valid_color(self, color_str: str) -> bool:
         """Validate if a string is a valid color."""
         try:
             QColor(color_str)
             return True
-        except:
+        except ValueError:
             return False

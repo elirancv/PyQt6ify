@@ -1,7 +1,6 @@
 """
 Tests for MainWindow class
 """
-import pytest
 from PyQt6.QtWidgets import QMainWindow
 from modules.core.main_window import MainWindow
 from modules.config.config import Config

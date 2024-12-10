@@ -26,7 +26,6 @@ def main():
         
         # Load configuration first
         config = Config()
-        config.load_config()
         
         # Create application instance with dark theme style
         os.environ['QT_STYLE_OVERRIDE'] = 'Fusion'  # Use Fusion style which works well with custom themes

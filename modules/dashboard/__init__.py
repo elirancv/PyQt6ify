@@ -1,7 +1,6 @@
 """
 Dashboard module initialization.
 """
-
-from .dashboard import Dashboard
+from modules.dashboard.dashboard import Dashboard
 
 __all__ = ['Dashboard']

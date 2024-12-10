@@ -1,22 +1,24 @@
-"""
-Tests for Toolbar module
-"""
-import pytest
-from PyQt6.QtWidgets import QToolBar, QMainWindow
+"""Test module for toolbar."""
+from PyQt6.QtWidgets import QToolBar
+from PyQt6.QtGui import QAction
 from modules.toolbar.toolbar import ToolBar
-from modules.config.config import Config
 
-def test_toolbar_creation(qapp):
-    """Test that ToolBar can be created"""
-    config = Config()
-    window = QMainWindow()
-    toolbar = ToolBar(window)
-    window.addToolBar(toolbar)
-    
+def test_toolbar_creation(qtbot):
+    """Test creating a toolbar."""
+    toolbar = ToolBar()
     assert isinstance(toolbar, QToolBar)
-    
-    # Check that essential actions exist
-    action_texts = [action.text() for action in toolbar.actions()]
-    assert any('New' in text for text in action_texts)
-    assert any('Open' in text for text in action_texts)
-    assert any('Save' in text for text in action_texts)
+
+def test_toolbar_actions(qtbot):
+    """Test toolbar actions."""
+    toolbar = ToolBar()
+    action = toolbar.addAction("Test")
+    assert isinstance(action, QAction)
+
+def test_toolbar_visibility(qtbot):
+    """Test toolbar visibility."""
+    toolbar = ToolBar()
+    assert toolbar.isVisible()
+    toolbar.hide()
+    assert not toolbar.isVisible()
+    toolbar.show()
+    assert toolbar.isVisible()

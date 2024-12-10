@@ -1,0 +1,103 @@
+[MASTER]
+# Add any Python module names here where you want to disable all warnings
+ignore=CVS
+
+# Files or directories to be skipped. They should be base names, not paths
+ignore-patterns=
+
+# Python code to execute, usually for sys.path manipulation such as pygtk.require()
+init-hook='import sys; sys.path.append(".")'
+
+# Use multiple processes to speed up Pylint (use "0" for auto)
+jobs=0
+
+# List of plugins (as comma separated values of python modules names) to load
+load-plugins=
+
+# Allow loading of arbitrary C extensions. Extensions are imported into the active Python interpreter and may run arbitrary code.
+unsafe-load-any-extension=no
+
+[MESSAGES CONTROL]
+# Only show warnings with the listed confidence levels. Leave empty to show all.
+confidence=
+
+# Disable specific warnings
+disable=C0111,  # missing-docstring
+        C0103,  # invalid-name (for variables)
+        R0903,  # too-few-public-methods
+        W0511,  # fixme
+        R0913,  # too-many-arguments
+        R0914,  # too-many-locals
+        W0703,  # broad-except
+        R0912,  # too-many-branches
+        R0915,  # too-many-statements
+        R0801,  # duplicate-code
+        W0621,  # redefined-outer-name
+        C0302,  # too-many-lines
+        C0301,  # line-too-long (we use black for this)
+        W0212,  # protected-access
+        W0603,  # global-statement
+        W0613,  # unused-argument (often needed for callbacks)
+        W0401,  # wildcard-import
+        W0614,  # unused-wildcard-import
+        R0902,  # too-many-instance-attributes
+        R0904,  # too-many-public-methods
+        R0911,  # too-many-return-statements
+        E0401,  # import-error (disable import errors)
+        E0402   # relative-beyond-top-level
+
+[REPORTS]
+# Set the output format. Available formats are text, parseable, colorized
+output-format=colorized
+
+# Include a brief explanation of each error
+msg-template={path}:{line}: [{msg_id}({symbol}), {obj}] {msg}
+
+# Files or directories to be skipped. They should be base names, not paths
+ignore=CVS
+
+[FORMAT]
+# Maximum number of characters on a single line
+max-line-length=120
+
+# Maximum number of lines in a module
+max-module-lines=2000
+
+# String used as indentation unit. This is usually "    " (4 spaces) or "\t" (1 tab).
+indent-string='    '
+
+[BASIC]
+# Regular expression which should only match function or class names
+function-rgx=[a-z_][a-z0-9_]{2,50}$
+class-rgx=[A-Z_][a-zA-Z0-9_]+$
+
+# Regular expression which should only match correct variable names
+variable-rgx=[a-z_][a-z0-9_]{2,50}$
+
+# Good variable names which should always be accepted
+good-names=i,j,k,ex,Run,_,id,qt
+
+[SIMILARITIES]
+# Minimum lines number of a similarity
+min-similarity-lines=10
+
+# Ignore imports when computing similarities
+ignore-imports=yes
+
+[TYPECHECK]
+# List of module names for which member attributes should not be checked
+ignored-modules=numpy,tensorflow,torch,cv2,PyQt6
+
+# List of classes names for which member attributes should not be checked
+ignored-classes=numpy,tensorflow,torch,cv2,PyQt6
+
+[MISCELLANEOUS]
+# List of note tags to take into consideration
+notes=FIXME,XXX,TODO
+
+[VARIABLES]
+# A regular expression matching the name of dummy variables
+dummy-variables-rgx=_$|dummy
+
+# List of additional names to consider as builtins
+additional-builtins=

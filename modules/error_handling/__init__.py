@@ -1,7 +1,6 @@
 """
-Error handling module for PyQt6ify Pro.
+Error handling module initialization.
 """
-
-from .error_handling import show_error_dialog
+from modules.error_handling.error_handling import show_error_dialog
 
 __all__ = ['show_error_dialog']

@@ -1,7 +1,6 @@
 """
-Status bar module for PyQt6ify Pro.
+Status bar module initialization.
 """
-
-from .status_bar import StatusBar
+from modules.status_bar.status_bar import StatusBar
 
 __all__ = ['StatusBar']

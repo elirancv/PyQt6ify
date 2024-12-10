@@ -14,9 +14,9 @@ def qapp():
     app = QApplication.instance()
     if app is None:
         app = QApplication([''])
-    
+
     yield app
-    
+
     # Clean up at the end of the session
     for widget in app.topLevelWidgets():
         widget.hide()

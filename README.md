@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.7.1+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-9.84%2F10-brightgreen.svg)](https://github.com/EliranCV/PyQt6ify-Pro)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Tests](https://img.shields.io/badge/Tests-Pending-yellow.svg)](https://github.com/elirancv/PyQt6ify-Pro/actions)
 [![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/issues)
