@@ -1,7 +1,6 @@
 """
 Dashboard module for PyQt6ify Pro.
 """
-import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt
 from loguru import logger

@@ -67,7 +67,6 @@ def test_help_menu(qapp):
 
 class TestWindow(QMainWindow):
     """Test window class for menu callbacks."""
-    
     def __init__(self):
         """Initialize test window."""
         super().__init__()
