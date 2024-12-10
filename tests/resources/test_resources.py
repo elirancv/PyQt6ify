@@ -9,9 +9,9 @@ from modules.resources.resources import get_resource_path, ResourceError
 def test_get_resource_path():
     """Test getting path to existing resource"""
     # Test with a known resource
-    path = get_resource_path('icons/app_icon.png')
+    path = get_resource_path('icons/app.png')
     assert os.path.exists(path)
-    assert path.endswith('icons/app_icon.png')
+    assert path.endswith('icons/app.png')
 
 def test_get_resource_path_nonexistent():
     """Test getting path to non-existent resource"""

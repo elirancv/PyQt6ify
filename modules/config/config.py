@@ -1,5 +1,5 @@
 """
-Configuration management module.
+Configuration management module for PyQt6ify Pro.
 """
 
 import configparser
@@ -15,7 +15,7 @@ class ConfigError(Exception):
 class Config:
     """Configuration class for PyQt6ify Pro."""
 
-    def __init__(self, config_file: str = "tests/config/config.ini"):
+    def __init__(self, config_file: str = "config/config.ini"):
         """Initialize the configuration.
 
         Args:
@@ -23,7 +23,7 @@ class Config:
         """
         self.config_file = config_file
         self.config = configparser.ConfigParser()
-        self._last_saved_state = None  # To avoid redundant saves
+        self._last_saved_state = None  # Track the last saved state to avoid redundant writes
 
         # Default settings
         self.default_config = {
@@ -36,7 +36,7 @@ class Config:
                 'Author': 'PyQt6ify Team',
                 'Description': 'Feature-rich PyQt6 application template.',
                 'Website': 'https://github.com/elirancv/PyQt6ify-Pro',
-                'Icon': 'modules/resources/icons/app.png',
+                'Icon': 'resources/icons/app.png',
             },
             'Modules': {
                 'logging': 'True',
@@ -53,10 +53,11 @@ class Config:
             },
         }
 
+        # Load the configuration file
         self.load()
 
     def load(self) -> None:
-        """Load configuration from file and ensure defaults."""
+        """Load configuration from file and ensure defaults are applied."""
         try:
             if not os.path.exists(self.config_file):
                 logger.warning(f"Configuration file not found. Creating defaults: {self.config_file}")
@@ -73,7 +74,7 @@ class Config:
             raise ConfigError(f"Failed to load configuration: {str(e)}") from e
 
     def _apply_defaults(self) -> None:
-        """Ensure all default sections and options exist."""
+        """Ensure all default sections and options exist in the configuration."""
         for section, options in self.default_config.items():
             if not self.config.has_section(section):
                 self.config.add_section(section)
@@ -89,6 +90,7 @@ class Config:
                 logger.debug("No changes detected; skipping save")
                 return
 
+            os.makedirs(os.path.dirname(self.config_file), exist_ok=True)
             with open(self.config_file, 'w', encoding='utf-8') as f:
                 self.config.write(f)
 
@@ -98,6 +100,7 @@ class Config:
             logger.error(f"Error saving configuration: {str(e)}")
             raise ConfigError(f"Failed to save configuration: {str(e)}") from e
 
+
     def _current_state(self) -> Dict[str, Dict[str, Any]]:
         """Get the current state of the configuration for comparison."""
         state = {}
@@ -106,7 +109,16 @@ class Config:
         return state
 
     def get(self, section: str, option: str, fallback: Any = None) -> Any:
-        """Get a value from the configuration."""
+        """Get a value from the configuration.
+
+        Args:
+            section (str): The section name.
+            option (str): The option name.
+            fallback (Any): Default value if the option is missing.
+
+        Returns:
+            Any: The value from the configuration or the fallback.
+        """
         try:
             return self.config.get(section, option, fallback=fallback)
         except configparser.Error as e:

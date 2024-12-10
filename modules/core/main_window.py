@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
             self.setWindowTitle(f"{app_name} {app_version}")
 
             # Set window icon
-            icon_path = self.config.get('about', 'icon', 'modules\\resources\\icons\\app.png')
+            icon_path = self.config.get('about', 'icon', 'resources\\icons\\app.png')
             if icon_path:
                 # If path is relative, make it absolute
                 if not os.path.isabs(icon_path):

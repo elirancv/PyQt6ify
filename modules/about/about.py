@@ -27,7 +27,7 @@ def show_about_dialog(config, parent=None, test_mode=False):
         author = about_info.get('Author', 'PyQt6ify Team')
         description = about_info.get('Description', 'A modern PyQt6 application template.')
         website = about_info.get('Website', 'https://github.com')
-        icon_path = about_info.get('icon', 'resources/icons/app_icon.png')
+        icon_path = about_info.get('icon', 'resources/icons/app.png')
 
         # Resolve full path for the icon
         if not os.path.isabs(icon_path):

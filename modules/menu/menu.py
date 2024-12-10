@@ -144,7 +144,8 @@ class MenuBar(QMenuBar):
             if not self.parent.config.config.has_section('Modules'):
                 self.parent.config.config.add_section('Modules')
             self.parent.config.config.set('Modules', 'toolbar', str(checked))
-            self.parent.config.save_config()
+            self.parent.config.save()
+
 
     def toggle_statusbar(self, checked):
         """Toggle status bar visibility."""
@@ -154,4 +155,4 @@ class MenuBar(QMenuBar):
             if not self.parent.config.config.has_section('Modules'):
                 self.parent.config.config.add_section('Modules')
             self.parent.config.config.set('Modules', 'status_bar', str(checked))
-            self.parent.config.save_config()
+            self.parent.config.save()
