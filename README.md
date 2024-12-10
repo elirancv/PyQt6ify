@@ -122,7 +122,6 @@ PyQt6ify-Pro/
 │   ├── status_bar/       # Status bar
 │   ├── themes/           # Theme engine
 │   └── toolbar/          # Toolbar system
-├── database/             # SQLite database
 ├── docs/                 # Documentation
 ├── extensions/           # Extension modules
 ├── logs/                 # Application logs
