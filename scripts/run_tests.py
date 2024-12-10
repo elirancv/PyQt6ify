@@ -16,7 +16,7 @@ def run_tests():
         "--cov=modules",
         "--cov-report=term-missing",
         "tests/"
-    ])
+    ], check=True)  # Explicitly defined the value for check in subprocess.run on line 13.
 
     return result.returncode == 0
 

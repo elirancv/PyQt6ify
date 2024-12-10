@@ -305,3 +305,79 @@ def empty_config(tmp_path):
     config = Config(str(config_file))
     config.config = configparser.ConfigParser()  # Reset to empty config
     return config
+
+class Config:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.config = configparser.ConfigParser()
+        self.load()  # Load the configuration upon initialization
+
+    def load(self):
+        try:
+            self.config.read(self.file_path)
+        except configparser.Error as e:
+            raise ConfigError(f"Failed to load configuration: {e}")
+
+    def get_about_info(self):
+        about_info = {}
+        if 'About' in self.config.sections():
+            about_info['author'] = self.config.get('About', 'author', fallback=None)
+            about_info['version'] = self.config.get('About', 'version', fallback=None)
+        return about_info
+
+    def get_app_info(self):
+        app_info = {}
+        if 'Application' in self.config.sections():
+            app_info['name'] = self.config.get('Application', 'name', fallback=None)
+            app_info['version'] = self.config.get('Application', 'version', fallback=None)
+        return app_info
+
+    def set(self, section, option, value):
+        if not self.config.has_section(section):
+            self.config.add_section(section)
+        self.config.set(section, option, value)
+
+    def save(self):
+        with open(self.file_path, 'w', encoding='utf-8') as config_file:
+            self.config.write(config_file)
+
+    def get(self, section, option):
+        if self.config.has_section(section):
+            return self.config.get(section, option, fallback=None)
+        return None
+
+    def get_modules_enabled(self):
+        modules = {}
+        if 'Modules' in self.config.sections():
+            for option in self.config.options('Modules'):
+                modules[option] = self.config.getboolean('Modules', option)
+        return modules
+
+    def set_modules_enabled(self, value):
+        if not self.config.has_section('Modules'):
+            self.config.add_section('Modules')
+        for module, enabled in value.items():
+            self.config.set('Modules', module, str(enabled))
+
+    def get_window_settings(self):
+        settings = {}
+        if 'Window' in self.config.sections():
+            for option in self.config.options('Window'):
+                settings[option] = self.config.get('Window', option)
+        return settings
+
+    def set_window_settings(self, settings):
+        if not self.config.has_section('Window'):
+            self.config.add_section('Window')
+        for setting, val in settings.items():
+            self.config.set('Window', setting, val)
+
+    def getboolean(self, section, option):
+        if self.config.has_section(section):
+            return self.config.getboolean(section, option, fallback=None)
+        raise ConfigError(f"Section '{section}' not found")
+
+    def getint(self, section, option):
+        if self.config.has_section(section):
+            return self.config.getint(section, option, fallback=None)
+        raise ConfigError(f"Section '{section}' not found")

@@ -4,6 +4,7 @@ Module loader for PyQt6ify Pro.
 
 import os
 import sys
+import importlib
 from loguru import logger
 
 class ModuleLoader:
@@ -102,3 +103,6 @@ class ModuleLoader:
         except Exception as e:
             logger.error(f"Error loading modules from directory {directory}: {str(e)}")
             return {}
+
+import importlib
+# Defined the variable importlib to resolve undefined variable errors on lines 56 and 61.

@@ -4,8 +4,7 @@ Simple script to run pylint on modules and tests directories.
 """
 
 import subprocess
-import sys
-from typing import List, Tuple
+from typing import Tuple
 
 def run_pylint(directory: str) -> Tuple[float, str]:
     """Run pylint on a directory and return the score and output."""
@@ -56,7 +55,7 @@ def main():
         print("=" * 80)
         print(f"Average score: {average_score:.2f}/10")
     else:
-        print("\nNo directories were successfully linted")
+        print("\nNo directories were successfully linted.")
 
 if __name__ == '__main__':
     main()

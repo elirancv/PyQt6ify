@@ -4,13 +4,12 @@ Main window implementation for PyQt6ify Pro.
 
 import os
 import sys
-import importlib
 import traceback
 from loguru import logger
 from PyQt6.QtWidgets import QMainWindow, QApplication
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
-
+from modules.about import show_about_dialog
 from modules.themes.theme_dialog import ThemeDialog
 from modules.themes.theme_manager import ThemeManager
 from modules.menu.menu import MenuBar
@@ -144,7 +143,6 @@ class MainWindow(QMainWindow):
     def show_about_dialog(self):
         """Show the about dialog."""
         try:
-            from modules.about import show_about_dialog
             show_about_dialog(self)
         except Exception as e:
             logger.error(f"Error showing about dialog: {str(e)}")

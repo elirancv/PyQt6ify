@@ -1,6 +1,5 @@
 """Script to remove trailing whitespace from Python files."""
 import os
-import sys
 
 def remove_trailing_whitespace(file_path):
     """Remove trailing whitespace from a file."""

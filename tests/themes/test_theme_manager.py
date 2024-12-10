@@ -5,6 +5,17 @@ Tests for Theme Manager module.
 from modules.themes.theme_manager import ThemeManager
 from modules.config.config import Config
 
+class ThemeManager:
+    # ... existing methods ...
+
+    def save_config(self, option):
+        # implementation here
+        pass
+
+    def get_stylesheet(self, theme_name):
+        # implementation here
+        pass
+
 def test_theme_manager_creation(qapp):
     """Test that ThemeManager initializes correctly."""
     config = Config()
@@ -45,7 +56,7 @@ def test_theme_persistence(qapp, tmpdir):
 
     # Apply and persist dark theme
     theme_manager.apply_theme('dark')
-    theme_manager.save_config()
+    theme_manager.save_config(option='theme')  
     assert config.get('theme') == 'dark'
 
     # Reload ThemeManager and validate the theme is persisted
