@@ -160,7 +160,7 @@ Located in `modules/config/config.py`:
 ```
 
 ### User Settings
-Stored in `config/user_settings.ini`:
+Stored in `config/config.ini`:
 ```ini
 [Window]
 theme = dark
