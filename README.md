@@ -16,7 +16,7 @@
 A professional Qt6-based desktop application framework that provides a robust foundation for building modern, feature-rich GUI applications in Python. This framework emphasizes modularity, extensibility, and modern UI/UX practices.
 
 <div align="center">
-  <img src="docs/images/screenshot.png" alt="PyQt6ify Pro Screenshot" width="800"/>
+  <img src="docs/images/sc.png" alt="PyQt6ify Pro Screenshot" width="800"/>
 </div>
 
 ## 🌟 Key Features
