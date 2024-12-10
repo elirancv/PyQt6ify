@@ -217,43 +217,7 @@ class ThemeManager:
             for window in self.app.topLevelWindows():
                 self.set_window_dark_mode(window, is_dark)
 
-            # Apply stylesheet
-            stylesheet = f"""
-                QWidget {{
-                    background-color: {theme["window"]};
-                }}
-                QMenuBar {{
-                    background-color: {theme["window"]};
-                    color: {theme["windowText"]};
-                    border: none;
-                }}
-                QMenuBar::item:selected {{
-                    background-color: {theme["highlight"]};
-                    color: {theme["highlightedText"]};
-                }}
-                QMenu {{
-                    background-color: {theme["window"]};
-                    color: {theme["windowText"]};
-                    border: 1px solid {theme["mid"]};
-                }}
-                QMenu::item:selected {{
-                    background-color: {theme["highlight"]};
-                    color: {theme["highlightedText"]};
-                }}
-                QToolBar {{
-                    background-color: {theme["window"]};
-                    border: none;
-                }}
-                QStatusBar {{
-                    background-color: {theme["window"]};
-                    color: {theme["windowText"]};
-                }}
-            """
-
-            self.app.setStyleSheet(stylesheet)
-            self.current_theme = theme_name
-
-            # Save to config immediately
+            # Save theme to config
             self.config.set('window', 'theme', theme_name)
             self.config.save()
 

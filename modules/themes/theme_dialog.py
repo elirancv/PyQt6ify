@@ -195,10 +195,10 @@ class ThemeDialog(QDialog):
             selected_items = self.theme_list.selectedItems()
             if selected_items:
                 theme_name = selected_items[0].text()
-                self.theme_manager.apply_theme(theme_name)
-                self.themeChanged.emit(theme_name)
-                self.accept()
-
+                if self.theme_manager.apply_theme(theme_name):
+                    self.accept()
+                else:
+                    self.reject()
         except Exception as e:
             logger.error(f"Error applying theme: {str(e)}")
             self.reject()

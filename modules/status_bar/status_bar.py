@@ -31,10 +31,6 @@ class StatusBar(QStatusBar):
             self.message_label = QLabel("Ready")
             self.message_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             self.addWidget(self.message_label)
-
-            self.theme_label = QLabel("Theme: Light")
-            self.theme_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-            self.addPermanentWidget(self.theme_label)
         except Exception as e:
             logger.error(f"Error creating permanent widgets: {str(e)}")
 
@@ -48,7 +44,7 @@ class StatusBar(QStatusBar):
         try:
             self.message_label.setText(message)
         except Exception as e:
-            logger.error(f"Error updating message: {str(e)}")
+            logger.error(f"Error updating status bar message: {str(e)}")
 
     def update_theme_label(self, theme_name: str):
         """
@@ -58,6 +54,8 @@ class StatusBar(QStatusBar):
             theme_name (str): Name of the current theme
         """
         try:
-            self.theme_label.setText(f"Theme: {theme_name.capitalize()}")
+            if self.theme_label:
+                self.theme_label.setText(f"Theme: {theme_name.capitalize()}")
+                logger.debug(f"Updated status bar theme label to: {theme_name}")
         except Exception as e:
             logger.error(f"Error updating theme label: {str(e)}")
