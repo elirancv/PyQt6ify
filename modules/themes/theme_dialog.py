@@ -9,6 +9,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import pyqtSignal
 from loguru import logger
 
+
 class ThemeDialog(QDialog):
     """Dialog for theme selection."""
 
@@ -24,6 +25,7 @@ class ThemeDialog(QDialog):
         super().__init__(parent)
         self.theme_manager = theme_manager
         self.initial_theme = None
+
         if theme_manager:
             current_theme = theme_manager.get_current_theme()
             self.initial_theme = current_theme['name'] if current_theme else None
@@ -53,6 +55,7 @@ class ThemeDialog(QDialog):
         # Add theme list
         self.theme_list = QListWidget()
         self.theme_list.setMinimumHeight(150)
+        self.theme_list.currentItemChanged.connect(self.preview_theme)
         layout.addWidget(self.theme_list)
 
         # Add preview section
@@ -66,13 +69,13 @@ class ThemeDialog(QDialog):
         preview_layout.addWidget(preview_label)
 
         # Add sample widgets for preview
-        sample_edit = QLineEdit("Sample text input")
-        sample_edit.setEnabled(False)
-        preview_layout.addWidget(sample_edit)
+        self.sample_edit = QLineEdit("Sample text input")
+        self.sample_edit.setEnabled(False)
+        preview_layout.addWidget(self.sample_edit)
 
-        sample_button = QPushButton("Sample Button")
-        sample_button.setEnabled(False)
-        preview_layout.addWidget(sample_button)
+        self.sample_button = QPushButton("Sample Button")
+        self.sample_button.setEnabled(False)
+        preview_layout.addWidget(self.sample_button)
 
         preview_frame.setLayout(preview_layout)
         layout.addWidget(preview_frame)
@@ -85,7 +88,7 @@ class ThemeDialog(QDialog):
         button_layout.addWidget(self.apply_button)
 
         self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.clicked.connect(self.reject)
+        self.cancel_button.clicked.connect(self.cancel_changes)
         button_layout.addWidget(self.cancel_button)
 
         layout.addLayout(button_layout)
@@ -186,23 +189,36 @@ class ThemeDialog(QDialog):
         except Exception as e:
             logger.error(f"Error applying styles: {str(e)}")
 
+    def preview_theme(self):
+        """Preview the selected theme without applying it."""
+        if not self.theme_manager:
+            return
+
+        selected_item = self.theme_list.currentItem()
+        if selected_item:
+            theme_name = selected_item.text()
+            logger.debug(f"Previewing theme: {theme_name}")
+            self.theme_manager.apply_theme(theme_name, preview_only=True)
+
     def apply_theme(self):
-        """Apply the selected theme."""
+        """Apply the selected theme and close the dialog."""
         if not self.theme_manager:
             return
 
         try:
-            selected_items = self.theme_list.selectedItems()
-            if selected_items:
-                theme_name = selected_items[0].text()
+            selected_item = self.theme_list.selectedItems()
+            if selected_item:
+                theme_name = selected_item[0].text()
+                logger.info(f"Applying theme: {theme_name}")
                 if self.theme_manager.apply_theme(theme_name):
                     self.accept()
-                else:
-                    self.reject()
         except Exception as e:
             logger.error(f"Error applying theme: {str(e)}")
             self.reject()
 
-    def reject(self):
-        """Handle dialog rejection."""
-        self.close()
+    def cancel_changes(self):
+        """Revert to the initial theme and close the dialog."""
+        if self.theme_manager and self.initial_theme:
+            logger.info(f"Reverting to initial theme: {self.initial_theme}")
+            self.theme_manager.apply_theme(self.initial_theme, preview_only=False)
+        self.reject()  # Close the dialog
