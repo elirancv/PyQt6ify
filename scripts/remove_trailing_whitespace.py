@@ -6,7 +6,6 @@ def remove_trailing_whitespace(file_path):
     """Remove trailing whitespace from a file."""
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
-    
     with open(file_path, 'w', encoding='utf-8', newline='\n') as file:
         for line in lines:
             file.write(line.rstrip() + '\n')
@@ -24,11 +23,11 @@ if __name__ == '__main__':
     # Get the project root directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
-    
+
     # Process modules and tests directories
     modules_dir = os.path.join(project_root, 'modules')
     tests_dir = os.path.join(project_root, 'tests')
-    
+
     print("Removing trailing whitespace from Python files...")
     process_directory(modules_dir)
     process_directory(tests_dir)
