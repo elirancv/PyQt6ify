@@ -28,8 +28,8 @@ class Config:
         # Default settings
         self.default_config = {
             'Application': {
-                'Name': 'PyQt6ify Pro Lite',
-                'Version': '1.0.0.0',
+                'Name': 'PyQt6ify Pro',
+                'Version': '1.0.0',
                 'Debug': 'False',
             },
             'About': {

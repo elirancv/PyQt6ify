@@ -145,8 +145,8 @@ Located in `modules/config/system_config.py`:
 ```python
 {
     'Application': {
-        'Name': 'PyQt6ify Pro Lite',
-        'Version': '1.0.0.0',
+        'Name': 'PyQt6ify Pro',
+        'Version': '1.0.0',
         'Debug': 'False'
     },
     'Modules': {
