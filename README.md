@@ -141,7 +141,7 @@ PyQt6ify-Pro/
 ## ⚙️ Configuration
 
 ### System Configuration
-Located in `modules/config/system_config.py`:
+Located in `modules/config/config.py`:
 ```python
 {
     'Application': {
