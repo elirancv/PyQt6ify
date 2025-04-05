@@ -260,3 +260,14 @@ This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) fo
 - 🐛 [Issue Tracker](https://github.com/elirancv/PyQt6ify-Pro/issues)
 - 💡 [Feature Requests](https://github.com/elirancv/PyQt6ify-Pro/issues/new?labels=enhancement)
 - 📋 [Project Board](https://github.com/elirancv/PyQt6ify-Pro/projects)
+  
+---
+
+<div align="center">
+  <p>Made with ❤️ by <a href="https://github.com/elirancv">elirancv</a></p>
+  <p>
+    <a href="https://github.com/elirancv/PSNetDrive/issues/new?template=bug_report.md&labels=bug&title=[Bug]:">Report Bug</a>
+    •
+    <a href="https://github.com/elirancv/PSNetDrive/issues/new?template=feature_request.md&labels=enhancement&title=[Feature]:">Request Feature</a>
+  </p>
+</div>
