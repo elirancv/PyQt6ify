@@ -264,10 +264,5 @@ This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) fo
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/elirancv">elirancv</a></p>
-  <p>
-    <a href="https://github.com/elirancv/PyQt6ify/issues/new?template=bug_report.md&labels=bug&title=[Bug]:">Report Bug</a>
-    •
-    <a href="https://github.com/elirancv/PyQt6ify/issues/new?template=feature_request.md&labels=enhancement&title=[Feature]:">Request Feature</a>
-  </p>
-</div>
+  <sub>Built with ❤️ by <a href="https://github.com/elirancv">Eliran Cohen</a></sub>
+</div> 
