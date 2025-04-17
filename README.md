@@ -3,15 +3,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.7.1-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
-[![Code Quality](https://img.shields.io/badge/Code%20Quality-10.00%2F10-brightgreen.svg)](https://github.com/EliranCV/PyQt6ify-Pro)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-10.00%2F10-brightgreen.svg)](https://github.com/EliranCV/PyQt6ify)
 [![Code style: black](https://img.shields.io/badge/code%20style-black--24.10.0-000000.svg)](https://github.com/psf/black)
-[![Tests: pytest](https://img.shields.io/badge/Tests-pytest--8.3.4-blue.svg)](https://github.com/elirancv/PyQt6ify-Pro/actions)
+[![Tests: pytest](https://img.shields.io/badge/Tests-pytest--8.3.4-blue.svg)](https://github.com/elirancv/PyQt6ify/actions)
 [![Logging: loguru](https://img.shields.io/badge/Logging-loguru--0.7.3-success.svg)](https://github.com/Delgan/loguru)
 [![Linting: pylint](https://img.shields.io/badge/Linting-pylint--3.3.2-success.svg)](https://github.com/PyCQA/pylint)
-[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/pulls)
-[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/stargazers)
-[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/blob/main/LICENSE.md)
+[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/pulls)
+[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/stargazers)
+[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/blob/main/LICENSE.md)
 
 A professional Qt6-based desktop application framework that provides a robust foundation for building modern, feature-rich GUI applications in Python. This framework emphasizes modularity, extensibility, and modern UI/UX practices.
 
@@ -76,14 +76,14 @@ A professional Qt6-based desktop application framework that provides a robust fo
 
 ### One-Line Installation
 ```bash
-pip install git+https://github.com/elirancv/PyQt6ify-Pro.git
+pip install git+https://github.com/elirancv/PyQt6ify.git
 ```
 
 ### Manual Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/elirancv/PyQt6ify-Pro.git
-   cd PyQt6ify-Pro
+   git clone https://github.com/elirancv/PyQt6ify.git
+   cd PyQt6ify
    ```
 
 2. Create and activate a virtual environment:
@@ -109,7 +109,7 @@ pip install git+https://github.com/elirancv/PyQt6ify-Pro.git
 
 ## 🏗️ Project Structure
 ```
-PyQt6ify-Pro/
+PyQt6ify/
 ├── modules/               # Core application modules
 │   ├── about/            # About dialog
 │   ├── config/           # Configuration system
@@ -249,25 +249,25 @@ This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) fo
 
 <div align="center">
 
-[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/pulls)
-[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/stargazers)
-[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify-Pro.svg)](https://github.com/elirancv/PyQt6ify-Pro/blob/main/LICENSE.md)
+[![GitHub Issues](https://img.shields.io/github/issues/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/pulls)
+[![GitHub Stars](https://img.shields.io/github/stars/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/stargazers)
+[![GitHub License](https://img.shields.io/github/license/elirancv/PyQt6ify.svg)](https://github.com/elirancv/PyQt6ify/blob/main/LICENSE.md)
 
 </div>
 
-- 📘 [Documentation](https://github.com/elirancv/PyQt6ify-Pro/wiki)
-- 🐛 [Issue Tracker](https://github.com/elirancv/PyQt6ify-Pro/issues)
-- 💡 [Feature Requests](https://github.com/elirancv/PyQt6ify-Pro/issues/new?labels=enhancement)
-- 📋 [Project Board](https://github.com/elirancv/PyQt6ify-Pro/projects)
+- 📘 [Documentation](https://github.com/elirancv/PyQt6ify/wiki)
+- 🐛 [Issue Tracker](https://github.com/elirancv/PyQt6ify/issues)
+- 💡 [Feature Requests](https://github.com/elirancv/PyQt6ify/issues/new?labels=enhancement)
+- 📋 [Project Board](https://github.com/elirancv/PyQt6ify/projects)
   
 ---
 
 <div align="center">
   <p>Made with ❤️ by <a href="https://github.com/elirancv">elirancv</a></p>
   <p>
-    <a href="https://github.com/elirancv/PyQt6ify-Pro/issues/new?template=bug_report.md&labels=bug&title=[Bug]:">Report Bug</a>
+    <a href="https://github.com/elirancv/PyQt6ify/issues/new?template=bug_report.md&labels=bug&title=[Bug]:">Report Bug</a>
     •
-    <a href="https://github.com/elirancv/PyQt6ify-Pro/issues/new?template=feature_request.md&labels=enhancement&title=[Feature]:">Request Feature</a>
+    <a href="https://github.com/elirancv/PyQt6ify/issues/new?template=feature_request.md&labels=enhancement&title=[Feature]:">Request Feature</a>
   </p>
 </div>
