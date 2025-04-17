@@ -1,4 +1,4 @@
-# PyQt6ify Pro
+# PyQt6ify
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -16,7 +16,7 @@
 A professional Qt6-based desktop application framework that provides a robust foundation for building modern, feature-rich GUI applications in Python. This framework emphasizes modularity, extensibility, and modern UI/UX practices.
 
 <div align="center">
-  <img src="docs/images/sc.png" alt="PyQt6ify Pro Screenshot" width="800"/>
+  <img src="docs/images/sc.png" alt="PyQt6ify Screenshot" width="800"/>
 </div>
 
 ## 🌟 Key Features
@@ -144,7 +144,7 @@ Located in `modules/config/config.py`:
 ```python
 {
     'Application': {
-        'Name': 'PyQt6ify Pro',
+        'Name': 'PyQt6ify',
         'Version': '1.0.0',
         'Debug': 'False'
     },
